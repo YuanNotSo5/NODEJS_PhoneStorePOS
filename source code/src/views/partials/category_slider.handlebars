@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="/css/category_slider.css">
+    <script src="/js/category_slider.js"></script>
+</head>
+<body>
+
+    <div>
+        {{#if categoriesWithProducts}}
+        <div id = "category-slider" class ="d-flex align-items-center justify-content-center">
+            <div id = "category_btn_navigator">
+                <input type ="button" id="prev" class = "btn btn-light" value = "<"> 
+            </div>
+            
+            
+            <div id="category-list" class = "d-flex">
+                {{#each categoriesWithProducts}}
+                    <div class="row d-flex">
+                        <div class = "categoryContainer col">
+                            <a href="/api/products_category/{{name}}" class="category">
+                                <img src="/images/productImg/{{this.fileName}}" class="cate_img shadow rounded-3">
+                            </a>
+                            <h3 class = "category_name">{{this.name}}</h3>
+                        </div>
+                        
+                    </div>
+                    
+                {{/each}}
+            </div>        
+            <div id="category_btn_navigator">
+                <input type ="button" id="next" class = "btn btn-light" value = ">">
+            </div>
+
+        </div>
+        {{/if}}
+    </div>
+</body>
+</html>

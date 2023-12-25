@@ -1,0 +1,26 @@
+
+.active-dot-green {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: #00ff00; /* Màu xanh */
+    display: inline-block;
+}
+.active-dot-red {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: crimson; /* Màu đỏ */
+    display: inline-block;
+}
+.active-dot-gray {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: #ccc; /* Màu xám */
+    display: inline-block;
+}
+
+.margin-50 {
+    margin-left: 50px;
+}

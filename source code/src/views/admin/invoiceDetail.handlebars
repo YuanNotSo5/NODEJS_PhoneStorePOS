@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Details</title>
+    <link rel="stylesheet" href="/css/product_slider.css">
+    <link rel="stylesheet" href="/css/index.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <script src="/js/dashboard.js"></script>
+
+    <link rel="stylesheet" href="/css/avatar.css">
+    <script src="/js/avatar.js"></script>
+    <style>
+        .product-img-container-invoice{
+            height: 100px;
+            width: 100px;
+            margin-bottom: 10px;
+        }
+        .centered{
+            vertical-align: middle;
+        }
+        #invoice_detail_layout{
+            width: 80%;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    {{> header}}
+    {{> dashboard}}
+
+    <div id = "main">
+        {{#if invoiceProducts}}
+        {{#each invoiceProducts}}
+        <h3 class="text-center" style="color: red; margin-top:20px">Thông tin chi tiết hóa đơn</h3>
+        <div id = "invoice_detail_layout" class = "container border-4 border">
+            <div class = "container" style="margin-top: 10px">
+            <h5 class="text-center" style="color: blue">Thông tin khách hàng</h5>
+            {{#each customer}}
+                <table class = "table border border-3">
+                    <tr>
+                        <td>Tên khách hàng:</td>
+                        <td>{{name}}</td>
+                    </tr>
+                    <tr>
+                        <td>Số điện thoại:</td>
+                        <td>{{phone}}</td>
+                    </tr>
+                    <tr>
+                        <td>Địa chỉ:</td> 
+                        <td>{{address}}</td>
+                    </tr>
+                </table>
+            {{/each}}
+        </div>
+
+        <div class = "container" style="margin-top: 20px;">
+            <h5 class="text-center" style="color: blue">Thông tin nhân viên</h5>
+            {{#each employee}}
+                <table class = "table border border-3">
+                    <tr>
+                        <td>Tên nhân viên:</td>
+                        <td>{{fullname}}</td>
+                    </tr>
+                </table>
+            {{/each}}
+        </div>
+
+        <div class = "container" style="margin-top: 20px">
+            <div class="row">
+                <div class="col">
+                    <h5 class="text-center" style="color: blue">Danh sách sản phẩm</h5>
+                </div>
+            </div>
+        </div>
+
+        <div class="container border border-3" style="overflow-y: scroll !important; max-height: 500px !important;">
+            <table class="table">
+                <thead>
+                    <th>Image</th>
+                    <th>Product</th>
+                    <th>Quantity</th>
+                    <th>Total</th>
+                </thead>
+                <div>
+                    <tbody> 
+                        {{#each products}}
+                        <tr>
+                            <td style="display:none">{{barcode}}</td>
+                            <td>
+                                <div class="col-6 product-img-container-invoice">
+                                    <img src="/images/productImg/{{fileName}}" alt="" class="img-fluid product-img">
+                                </div>
+                                
+                            </td>
+                            <td class="centered">{{name}}</td>
+                            <td class="centered">{{quantity}}</td>
+                            <td class="centered">{{price}}</td>
+                        </tr>
+                        {{/each}}
+
+                    </tbody>
+                </div>
+            </table>
+            
+        </div>
+
+        <div class="container">
+            <div class ="row d-flex justify-content-end">
+                <div class = "col-4"></div>
+                <div class ="col-8 d-flex justify-content-end">
+                    <h3 class="text-danger">Ngày {{formatDate date}}</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class ="row d-flex justify-content-end">
+                <div class = "col-4"></div>
+                <div class ="col-8 d-flex justify-content-end">
+                    <h3 class="text-danger">Tổng: {{revenue}}</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class ="container" style="margin-bottom:10px">
+            <div class="row">
+                <div class="col-6">
+                    <label for="receivedAmountInput">Tiền nhận:</label>
+                    <input type="text" value ="{{receivedMoney}}" class="form-control" placeholder="Nhập tiền nhận" readonly>
+                </div>
+                <div class="col-6">
+                    <label for="changeAmountInput">Tiền thừa:</label>
+                    <input type="text" class="form-control" value= "{{changes}}" placeholder="Tiền thừa" readonly>
+                </div>
+            </div>
+        </div>
+
+        <div class ="container border-top">
+            <div class="d-flex justify-content-end" style="margin-top: 10px">
+                <a type="button" class="btn btn-secondary" href="/invoices">Quay Lại</a>
+            </div>
+        </div>
+        </div>
+    {{/each}}
+    {{/if}}
+    </div>
+</body>
+</html>

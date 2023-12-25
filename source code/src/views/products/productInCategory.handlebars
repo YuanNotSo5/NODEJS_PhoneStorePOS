@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Homepage</title>    
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <script src="/js/dashboard.js"></script>
+
+    <link rel="stylesheet" href="css/category_slider.css">
+    <script src="/js/category_slider.js"></script>
+
+    <link rel="stylesheet" href="css/product_slider.css">
+    <script src="/js/product_slider.js"></script>
+
+    <link rel="stylesheet" href="/css/index.css">
+    <script src="/js/index.js"></script>
+
+    {{!-- <link rel="stylesheet" href="/css/admin.css"> --}}
+    
+    <link rel="stylesheet" href="/css/avatar.css">
+    <script src="/js/avatar.js"></script>
+
+    <style>
+        .col-3 {
+            height: fit-content;
+        }
+        .productPerCategory{
+            height: fit-content;
+            width: 250px;
+            padding-bottom: 20px;
+            box-shadow: 0 5px 5px 0 rgba(0, 0, 0, 0.1), 0 5px 15px 0 rgba(0, 0, 0, 0.1);
+            margin: 20px 15px 20px 15px
+        }
+        .productPerCategory-img{
+            max-width:100%;
+            max-height:100%;
+            object-fit: cover;
+            transition: 0.5s;
+            margin:10px;
+        }
+        #header nav{
+            top: 0;
+            margin-left: 50px;
+            margin-right: 50px;
+        }
+    </style>
+</head>
+<body >
+    {{> header}}
+    {{> dashboard}}
+    {{> payment_sidebar}} 
+
+    <div id = "main">
+        {{#if loginSuccess}}
+        <div class="alert alert-success">{{loginSuccess}}</div>
+    {{/if}}
+        <div class = "container">
+        <div id = "toolbar" class="row">
+            <div class = "col-6">
+                <div class="input-group mb-6">
+
+                    <select id="brand" class="form-select form-select-lg mb-3" aria-label="Large select example">
+                        <option selected>Choose Branch</option>
+                        {{#each uniqueBranches}}
+                            <option value={{this}}>{{this}}</option>
+                        {{/each}}
+                    </select>
+                </div>
+            </div>
+            <div class ="col-6">
+                <div class="input-group mb-6">
+                    <input name="" id="find2" type="text" class="form-control" placeholder="Search" aria-label="Recipient's username" aria-describedby="basic-addon2">
+                    <span class="input-group-text" id="basic-addon2">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <br>
+            {{> category_slider}}
+        </div>
+
+    {{#if choseCategory}}
+        {{#each choseCategory}}
+            <div id={{_id}} class="product_label row">
+                <h3><a style="text-decoration: none; color: black" href="products/category/{{category}}">{{category}}</a></h3>
+            </div>
+        {{/each}}
+    {{/if}}
+
+    <div class ="container">
+        {{#if products}}
+        <div class = "row">
+            {{#each products}}
+
+                <div class = "col-3 product-item" data-id="{{branch}}" id="{{barcode}}">
+                    <div class="productPerCategory border border-3 rounded-3 d-flex justify-content-center align-items-center">
+                        <div class="text-center">
+                            <div class ="product-img-container d-flex justify-content-center align-items-center">
+                                <img src="/images/productImg/{{fileName}}" class="productPerCategory-img" alt="image">
+                            </div>      
+                            <h5 class="card-title">{{this.name}}</h5>
+                            <h5 class="card-text">{{formatNumberToCurrency retailPrice}}</h5>
+                            <button class="btn btn-success">Details</button>
+                            <button class="btn btn-danger">Add to cart</button>
+                        </div>
+                    </div>
+                </div>
+            {{/each}}  
+        </div>
+    {{/if}}
+    </div>
+    </div>
+    </div>
+</body>
+<script>
+    $(document).ready(function () {
+        $('#find2').on('input', function () {
+            var searchValue = $(this).val().toLowerCase();
+            console.log(searchValue);
+
+            $('.product-item').hide();
+            var searchResult = $('.product-item').filter(function () {
+                var productName = $(this).find('.card-title').text().toLowerCase();
+                var productId = $(this).attr('id');
+
+                return productName.includes(searchValue) || productId.includes(searchValue);
+            });
+
+            if (searchResult.length === 0) {
+                searchResult = $('.product-item[id*="' + searchValue.toLowerCase() + '"]');
+                
+            } else {
+                searchResult.show();
+            }
+        });
+
+        function formatNumberToCurrency(numberValue) {
+            // Sử dụng toLocaleString để định dạng số với dấu phẩy ngăn cách hàng nghìn
+            return numberValue.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+        }
+
+        $("#brand").on('change', function () {
+            let brand = $("#brand option:selected").val();
+
+            if (brand === "choose branch") {
+                $('.product-item').show();
+                return;
+            }
+
+            $('.product-item').hide();
+
+            var searchResult = $('.product-item').filter(function () {
+                var productName = $(this).find('.card-title').text().toLowerCase();
+                var productId = $(this).attr('data-id');
+
+                console.log('ProductName:', productName, 'ProductId:', productId);
+
+                return productName.includes(brand) || productId.includes(brand);
+            });
+
+            console.log('brand:', brand);
+
+            if (searchResult.length === 0) {
+                searchResult = $('.product-item[data-id*="' + brand.toLowerCase() + '"]');
+            }
+
+            searchResult.show();
+        });
+
+    });
+</script>
+
+
+</html>

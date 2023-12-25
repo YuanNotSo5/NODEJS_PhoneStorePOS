@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Product Page - Admin HTML Template</title>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css?family=Roboto:400,700"
+    />
+
+    <link rel="stylesheet" href="/css/admin/index.css">
+    <link rel="stylesheet" href="/css/index.css">
+    <link rel="stylesheet" href="/css/avatar.css">
+    
+    <script src="/js/avatar.js"></script>
+
+    <style>
+        #exampleModal .modal-body form .form-control {
+            border-radius: 6px;
+            background-color: #b6dbf6;
+            border: 1px solid #d1d1d1;
+            background-color: white;
+            color: black !important;
+        }
+    </style>
+
+  </head>
+
+  <body id="reportsPage">
+    {{> header}}
+    {{> dashboard}}
+    {{> payment_sidebar}}
+    <div id = "main">
+        <div class="container">
+        {{!-- Alert --}}
+        <div class="alert alert-success" id="alertGenSuccess" style="display: none;">
+        </div>
+        <div class="alert alert-danger" id="alertGenDanger" style="display: none;">
+        </div>
+
+        <div class="row tm-content-row">
+            {{!-- List Products --}}
+            <div class="col-sm-12 col-md-12 col-lg-8 col-xl-8 tm-block-col">
+            <div class="tm-bg-primary-dark tm-block tm-block-products">
+                <h2 class="tm-block-title">Product Store</h2>
+                <div class="input-group mb-3">
+                    <input type="text" id="search" class="form-control" placeholder="Search" aria-label="Recipient's username" aria-describedby="basic-addon2">
+                    <span class="input-group-text" id="basic-addon2">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </span>
+                </div>
+                <div class="tm-product-table-container">
+                    <table class="table table-hover tm-table-small tm-product-table">
+                        <thead>
+                            <tr>
+                                <th scope="col">&nbsp;</th>
+                                <th scope="col">PRODUCT NAME</th>
+                                <th scope="col">UNIT SOLD</th>
+                                <th scope="col" class="product_action">IMPORT SOLD</th>
+                                <th scope="col">IN STOCK</th>
+                                <th scope="col">EXPIRE DATE</th>
+                                <th scope="col">&nbsp;</th>
+                            </tr>
+                        </thead>
+                        <tbody class="body-table">
+                          {{#each listProducts}}
+                            <tr id="{{barcode}}">                   
+                                <th scope="row"><input type="checkbox" class="tm-checkbox" /></th>
+                                <td class="tm-product-name">{{name}}</td>
+                                <td>{{retailPrice}}</td>
+                                <td class="product_action">{{importPrice}}</td>
+                                <td>{{totalQuantity}}</td>
+                                <td>{{formatDate creationDate}}</td>
+                                <td class = "product_action">
+                                    <a href="#" data-bs-toggle="modal" data-bs-target="#deleteModal" class="tm-product-delete-link" data-bs-whatever="{{name}}" data-id="{{barcode}}">
+                                        <i class="far fa-trash-alt tm-product-delete-icon"></i>
+                                    </a>
+                                    <a href="#" data-bs-toggle="modal" data-bs-target="#exampleModal" class="ms-2 tm-product-delete-link" data-bs-whatever="{{barcode}}">
+                                        <i style="color: white;" class="fa-solid fa-pen"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        {{/each}}
+                        </tbody>
+                    </table>
+                </div>
+                <!-- table container -->
+                <div class="d-flex flex-row-reverse">
+                    <button type="button" class="btn btn-primary btn-block text-uppercase ms-3 product_action" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="add">ADD NEW PRODUCT</button>
+                    <button class="btn btn-primary btn-block text-uppercase product_action" id="deleteSelected">Delete selected products</button>
+                </div>
+
+            </div>
+            </div>
+            {{!-- Category --}}
+            <div class="col tm-block-col tm-bg-primary-dark">
+                <div class="tm-block tm-block-product-categories" style="height: 1000px !important">
+                    <h2 class="tm-block-title">Product Categories</h2>
+                    <div class="input-group mb-3">
+                        <input type="text" id="searchCate" class="form-control" placeholder="Search" aria-label="Recipient's username" aria-describedby="basic-addon2">
+                        <span class="input-group-text" id="basic-addon3">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </span>
+                    </div>  
+                    <div class="tm-product-table-container">
+                        <table class="table tm-table-small tm-product-table">
+                            <tbody class="body-table-cate">
+                                {{#each listCate}}
+                                    <tr id="{{_id}}">
+                                        <td class="tm-product-nameCate">{{name}}</td>
+                                        <td class="text-center product_action">
+                                            <a href="#" data-bs-toggle="modal" data-bs-target="#deleteCateModal" class="tm-product-delete-link" data-bs-whatever="{{name}}" data-id="{{_id}}">
+                                                <i class="far fa-trash-alt tm-product-delete-icon"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {{/each}}
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- table container -->
+                    <button class="btn btn-primary btn-block text-uppercase mb-3 product_action" data-bs-toggle="modal" data-bs-target="#createCategoryModal" data-bs-whatever="@getbootstrap">
+                    Add new category
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    {{!-- Modal Add Diaglog --}}
+    <div class="modal fade " id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="fw-bold py-3 text-title">Create New Product</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" id="btnCloseModal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                    <div class="container">
+                        <div class="alert alert-success" style="display: none;" id="alertSuccess" role="alert">
+                            Add new Product Successfully
+                        </div>
+                        <div class="alert alert-danger" id="alertDanger" style="display: none;" role="alert">
+                        </div>
+                        <div class="content-wrapper">
+                            <!-- Content -->
+                            <div class="container-xxl flex-grow-1 container-p-y">
+                                <!-- Basic Layout -->
+                                <div class="row">
+                                        {{!-- Image --}}
+                                        <div class="col-xl-5">
+                                            <form action="/products/create" style="height: 86%; border: 0px !important" id="form_upload" method="post" enctype="multipart/form-data">
+                                                <div class="card mb-4" style="height: 100%; border: 0px !important">
+                                                    <div class="container-img" style="background-color: #b6dbf6;">
+                                                        <input type="file" class="custom-file-input" name="file" id="file" accept="image/*" hidden>
+                                                        <div class="img-area" data-img="">
+                                                            <i class='bx bxs-cloud-upload icon'></i>
+                                                            <h3>Upload Image</h3>
+                                                            <p>Image size must be less than <span>2MB</span></p>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <div class="progress" style="height:5px; display: none">
+                                                                <div class="progress-bar bg-success" style="width:0%;height:10px"></div>
+                                                            </div>
+                                                        </div>
+                                                        <div id="fileHelper" style="color: red;" class="form-text" hidden>Vui lòng chọn hình ảnh tên sản phẩm</div>
+                                                        <p style="text-align: center;" class="select-image">Choose an image</p>
+                                                    </div>
+                                                </div>
+                                                <button id="addProductBtn" style="width: 100%;" type="submit" class="btn btn-success px-5">Upload</button>
+                                            </form>
+                                        </div>
+                                        {{!-- Infomation for Products --}}
+                                        <div class="col-xl">
+                                            <form>
+                                                {{!-- Category --}}
+                                                <div class="row">
+                                                    <div class="col-xl">
+                                                        <div class="card mb-4">
+                                                            <div class="card-header d-flex justify-content-between align-items-center">
+                                                                <h5 class="mb-0">Category</h5>
+                                                            </div>
+                                                            <div class="card-body">
+                                                                <select class="form-select form-select-lg mb-3" id="category" aria-label="Large select example">
+                                                                    <option selected>Open this select menu</option>
+                                                                    {{#each listCate}}
+                                                                        <option value={{name}}>{{name}}</option>
+                                                                    {{/each}}
+                                                                </select>
+                                                                <div id="cateHelper" style="color: red;" class="form-text" hidden>Vui lòng chọn thể loại sản phẩm</div>
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                                {{!-- Name --}}
+                                                <div class="row">
+                                                    <div class="col-xl">
+                                                        <div class="card mb-4">
+                                                            <div class="card-header d-flex justify-content-between align-items-center">
+                                                                <h5 class="mb-0">Information</h5>
+                                                            </div>
+
+                                                            <div class="card-body">
+                                                                <div class="container-1 d-flex">
+                                                                    <div class="mb-3 flex-fill me-2">
+                                                                        <label class="form-label" for="nameProductInput">Tên sản phẩm</label>
+                                                                        <input class="form-control form-control-lg" name="product-name" type="text" placeholder="Tên sản phẩm" aria-label=".form-control-lg example" id="nameProductInput">
+                                                                        <div id="nameHelper" style="color: red;" class="form-text" hidden>Vui lòng nhập đầy đủ thông tin tên sản phẩm</div>
+                                                                    </div>
+                                                                    <div class="mb-3">
+                                                                        <label class="form-label" for="barcodeInput">Mã Barcode</label>
+                                                                        <input name="barcode" class="form-control form-control-lg" type="text"  aria-label=".form-control-lg example"  id="barcodeInput" placeholder="Mã barcode" aria-label="john.doe"
+                                                                        aria-describedby="basic-default-email2">
+                                                                        <div id="barcodeHelper" style="color: red;" class="form-text" hidden>Vui lòng nhập mã barcode</div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="container-1 d-flex">
+                                                                    <div class="mb-3 flex-grow-1 me-2">
+                                                                        <label class="form-label" for="brachInput">Hãng</label>
+                                                                        <input name="branch" class="form-control form-control-lg" type="text" placeholder="Hãng sản xuất" aria-label=".form-control-lg example" id="brachInput">                                                                                                                                   <div id="branchHelper" style="color: red;" class="form-text" hidden>Vui lòng nhập hãng của sản phẩm</div>
+
+                                                                    </div>
+                                                                    <div class="mb-3 ">
+                                                                        <label class="form-label" for="dateInput">Ngày sản xuất</label>
+                                                                        <input name="date" class="form-control form-control-lg" type="date" aria-label=".form-control-lg example" id="dateInput">
+                                                                        <div id="dateHelper" style="color: red;" class="form-text" hidden>Vui lòng chọn ngày sản xuất</div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="container-1 d-flex">
+                                                                    <div class="mb-3 flex-fill me-2">
+                                                                        <label class="form-label" for="retailPriceInput">Giá bán</label>
+                                                                        <input name="retail-price" class="form-control form-control-lg currency-input" type='text' placeholder="Giá bán lẻ" aria-label=".form-control-lg example" id="retailPriceInput">
+                                                                        <div id="retailHelper" style="color: red;" class="form-text" hidden>Vui lòng nhập giá bán</div>
+                                                                    </div>
+                                                                    <div class="mb-3 flex-fill">
+                                                                        <label class="form-label" for="importPrice">Giá nhập</label>
+                                                                        <input name="import-price" class="form-control form-control-lg currency-input" type='text' placeholder="Giá nhập" aria-label=".form-control-lg example" id="importPrice">
+                                                                        <div id="importHelper" style="color: red;" class="form-text" hidden>Vui lòng nhập giá nhập</div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="mb-3">
+                                                                    <label class="form-label" for="quantityInput">Số lượng</label>
+                                                                    <input name="quantity" class="form-control form-control-lg" type="number" placeholder="Số lượng" aria-label=".form-control-lg example" id="quantityInput" value="1">
+                                                                </div>
+                                                                <div class="mb-3">
+                                                                    <label class="form-label" for="description">Mô Tả</label>
+                                                                    <textarea style="font-size: 20px; min-height: 140px"
+                                                                        name="description"
+                                                                        id="description"
+                                                                        class="form-control"
+                                                                        placeholder="Mô tả sản phẩm"
+                                                                    ></textarea>
+                                                                </div>
+                                                            </div>
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                </div>
+                            </div>
+                            <div class="content-backdrop fade"></div>
+                        </div>
+                    </div>
+                </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="cancleBtnModal" data-bs-dismiss="modal">CANCLE</button>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    {{!-- Modal Delete Dialog --}}
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="btnDeleteModal">Save changes</button>
+            </div>
+            </div>
+        </div>
+    </div>
+
+    {{!-- Modal Add Category Dialog --}}
+    <div class="modal fade" id="createCategoryModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Create new category</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="content-wrapper">
+                        <!-- Content -->
+                    <div class="container-xxl flex-grow-1 container-p-y" style="height: 80vh;">
+                        <div class="row" style="height: 100%;">
+                            <div class="col-xl-5">
+                                <form action="/products/create" style="height: 86%; border: 0px !important" id="form_upload2" method="post" enctype="multipart/form-data">
+                                    <div class="card mb-4" style="height: 100%; border: 0px !important">
+                                        <div class="container-img" style="background-color: #b6dbf6;">
+                                            <input type="file" class="custom-file-input" name="file" id="file2" accept="image/*" hidden>
+                                            <div class="img-area2" data-img="">
+                                                <i class='bx bxs-cloud-upload icon'></i>
+                                                <h3>Upload Image</h3>
+                                                <p>Image size must be less than <span>2MB</span></p>
+                                            </div>
+                                            <div id="fileHelper2" style="color: red;" class="form-text" hidden>Vui lòng chọn hình ảnh tên sản phẩm</div>
+                                            <p style="text-align: center;" class="select-image2">Choose an image</p>
+                                        </div>
+                                    </div>
+                                    <button id="addProductBtn2" style="width: 100%;" type="submit" class="btn btn-success px-5">Upload</button>
+                                </form>
+                            </div>
+                            <div class="col-xl-7">
+                                <form>
+                                    <div class="mb-3">
+                                        <label for="recipient-name" class="col-form-label">New Category:</label>
+                                        <input type="text" id="categoryInput" class="form-control" style="background: aliceblue;color: black;border: 1px solid;">
+                                        <div id="cateHelper2" style="color: red;" class="form-text" hidden>Vui lòng nhập đầy đủ thông tin tên thể loại</div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+            </div>
+        </div>
+    </div>
+
+    {{!-- Modal Delete Category Dialog --}}
+    <div class="modal fade" id="deleteCateModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="CateModalLabel"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="btnDeleteCateModal">Save changes</button>
+            </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/jquery-3.3.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script>
+      $(function() {
+        $(".tm-product-name").on("click", function() {
+          window.location.href = "edit-product.html";
+        });
+      });
+    $(document).ready(function(){
+        let listbarcode = [];
+        let itemDelete;let cateDelete;
+        let isUpdate = false;
+        let itemUpdate;
+        let fileNameValue = "";
+        //Check box
+        $('.tm-checkbox').on('change', function() {
+            const rowId = $(this).closest('tr').attr('id');
+
+            if ($(this).prop('checked')) {
+                console.log('Checkbox checked for row with ID:', rowId);
+                listbarcode.push(rowId);
+            } else {
+                console.log('Checkbox unchecked for row with ID:', rowId);
+                // Remove the barcode from the list
+                const index = listbarcode.indexOf(rowId);
+                if (index !== -1) {
+                    listbarcode.splice(index, 1);
+                }
+            }
+
+            // Now listbarcode array contains the barcodes of checked checkboxes
+            console.log('Current list of barcodes:', listbarcode);
+        });
+        //Add Product to Modal
+        $("#btnCloseModal").click((e)=>{
+            location.reload();
+        })
+        $("#cancleBtnModal").click((e)=>{
+            location.reload();
+        })
+
+        //-------------------Image Handle-----------------------
+        const selectImage = document.querySelector('.select-image');
+        const inputFile = document.querySelector('#file');
+        const imgArea = document.querySelector('.img-area');
+        const selectImage2 = document.querySelector('.select-image2');
+        const inputFile2 = document.querySelector('#file2');
+        const imgArea2 = document.querySelector('.img-area2');
+        selectImage.addEventListener('click', function (event) {
+            // Prevent the click event from propagating to the modal close button
+            event.stopPropagation();
+            inputFile.click();
+        });
+        selectImage2.addEventListener('click', function (event) {
+            // Prevent the click event from propagating to the modal close button
+            event.stopPropagation();
+            inputFile2.click();
+        });
+        inputFile.addEventListener('change', function () {
+            const image = this.files[0];
+            if (image.size < 2000000) {
+                const reader = new FileReader();
+                reader.onload = ()=> {
+                    const allImg = imgArea.querySelectorAll('img');
+                    allImg.forEach(item=> item.remove());
+                    const imgUrl = reader.result;
+                    const img = document.createElement('img');
+                    img.src = imgUrl;
+                    imgArea.appendChild(img);
+                    imgArea.classList.add('active');
+                    imgArea.dataset.img = image.name;
+                };
+                reader.readAsDataURL(image);
+            } else {
+                alert("Image size more than 2MB");
+            }
+        });
+        inputFile2.addEventListener('change', function () {
+            const image = this.files[0];
+            if (image.size < 2000000) {
+                const reader = new FileReader();
+                reader.onload = ()=> {
+                    const allImg = imgArea2.querySelectorAll('img');
+                    allImg.forEach(item=> item.remove());
+                    const imgUrl = reader.result;
+                    const img = document.createElement('img');
+                    img.src = imgUrl;
+                    imgArea2.appendChild(img);
+                    imgArea2.classList.add('active');
+                    imgArea2.dataset.img = image.name;
+                };
+                reader.readAsDataURL(image);
+            } else {
+                alert("Image size more than 2MB");
+            }
+        });
+        //----------------End of Image Handle-----------------------
+
+        //---------------Money Handle--------------------------------
+        //https://stackoverflow.com/questions/24163889/html5-input-for-money-currency
+        var currencyInputs = document.querySelectorAll('.currency-input');
+        var currency = 'VND';
+        currencyInputs.forEach(function(currencyInput) {
+            currencyInput.addEventListener('focus', onFocus);
+            currencyInput.addEventListener('blur', onBlur);
+        });
+
+        function localStringToNumber(s) {
+            return Number(String(s).replace(/[^0-9.,-]+/g, ""));
+        }
+
+        function onFocus(e) {
+            var value = e.target.value;
+            e.target.value = value ? localStringToNumber(value) : '';
+        }
+
+        function onBlur(e) {
+            var value = e.target.value;
+
+            var options = {
+                maximumFractionDigits: 2,
+                currency: currency,
+                style: "currency",
+                currencyDisplay: "symbol"
+            }
+            e.target.value = (value || value === 0)
+                ? localStringToNumber(value).toLocaleString(undefined, options)
+                : '';
+        }
+
+        function parseCurrencyToNumber(currencyValue) {
+            var cleanedValue = currencyValue.replace(/[^0-9,-]+/g, "");
+            var numberValue = parseFloat(cleanedValue.replace(/,/g, ''));
+            return isNaN(numberValue) ? 0 : numberValue;
+        }
+
+        function formatNumberToCurrency(numberValue) {
+            return numberValue.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+        }
+
+        //---------------END OF MONEY HANDLE--------------------------------
+
+        //-----------------Send form add product ---------------------------//
+        $("#addProductBtn").click(function (e) {
+            e.preventDefault();
+            let productName = $("#nameProductInput").val();
+            let categoryText = $("#category option:selected").text();
+            let barcode = $("#barcodeInput").val();
+            let branch = $("#brachInput").val();
+            let date = $("#dateInput").val();
+            let retailprice = $("#retailPriceInput").val();
+            let importprice = $("#importPrice").val();
+            let quantity = $("#quantityInput").val();
+            let description = $("#description").val();
+            let fileName = fileNameValue || $("#file")[0].files[0];
+
+            if(checkInput(productName,categoryText,barcode,branch,date,retailprice,importprice,quantity,description,fileName)){
+                //upload file
+                let data = new FormData($('form#form_upload')[0]);
+                $('.progress-bar').css('width',0+'%');
+                $.ajax({
+                    xhr: function()
+                    {
+                        var xhr = new window.XMLHttpRequest();
+                        //Upload progress
+                        xhr.upload.addEventListener("progress", function(evt){
+                        if (evt.lengthComputable) {
+                            $('.progress').css('display','block');
+                            let loadedKB = Math.floor(evt.loaded/1000);
+                            let totalKB = Math.floor(evt.total/1000);
+                            let size = totalKB < 1024 ? `${loadedKB} KB` : `${(loadedKB/1024).toFixed(2)} MB`
+                            percent = Math.floor(loadedKB/totalKB * 100);
+                            $('.progress-bar').css('width',percent+'%');
+                        }
+                        }, false);
+                        //Download progress
+                        xhr.addEventListener("progress", function(evt){
+                        if (evt.lengthComputable) {
+                            var percentComplete = evt.loaded / evt.total;
+                            //Do something with download progress
+                        }
+                        }, false);
+                        return xhr;
+                    },
+                    url: '/products/create',
+                    contentType: false,
+                    processData: false,
+                    enctype: 'multipart/form-data',
+                    data: data,
+                    type: 'post',
+                    success: function (response) {
+                        var newDate = new Date(date);
+                        addNewProduct(productName,categoryText,barcode,branch,newDate,retailprice,importprice,quantity,description,fileName.name)
+                    },
+                    error: function (error) {
+                        $("#alertDanger").html("Không thể thêm sản phẩm mới: "+error).show();
+
+                        //location.reload();
+                        console.log(error);
+                    }
+                });
+            }
+        })
+        function checkInput (productName,categoryText,barcode,branch,date,retailprice,importprice,quantity,description,fileName){
+            if(fileName == undefined){
+                $("#fileHelper").removeAttr("hidden");
+                return false;
+            }
+            if(categoryText=='Open this select menu'){
+                $("#cateHelper").removeAttr("hidden");
+                return false;
+            }
+            if(productName==="") {
+                $("#nameHelper").removeAttr("hidden");
+                return false;
+            }
+            if(barcode==="") {
+                $("#barcodeHelper").removeAttr("hidden");
+                return false;
+            }
+            if(branch=="") {
+                $("#branchHelper").removeAttr("hidden");
+                return false;
+            }
+            if(date==""){
+                $("#dateHelper").removeAttr("hidden");
+                return false;
+            }
+            if(retailprice=="") {
+                $("#retailHelper").removeAttr("hidden");
+                return false;
+            }
+            if(importprice=="") {
+                $("#importHelper").removeAttr("hidden");
+                return false;
+            }
+            $("#dateHelper").attr("hidden", true);
+            $("#cateHelper").attr("hidden", true);
+            $("#fileHelper").attr("hidden", true);
+            $("#nameHelper").attr("hidden", true);
+            $("#barcodeHelper").attr("hidden", true);
+            $("#branchHelper").attr("hidden", true);
+            $("#dateHelper").attr("hidden", true);
+            $("#retailHelper").attr("hidden", true);
+            $("#importHelper").attr("hidden", true);
+
+            return true;
+        }
+        function addNewProduct(productName,categoryText,barcode,branch,date,retailprice,importprice,quantity,description,fileName){
+            var retailPriceNumber = parseCurrencyToNumber(retailprice);
+            var importPriceNumber = parseCurrencyToNumber(importprice);
+            console.log('creationdate', date);
+
+            if(isUpdate){
+                $.ajax({
+                    url: "/api/products/"+itemUpdate,
+                    type: "PUT",
+                    data: {
+                        barcode: barcode,
+                        name: productName,
+                        importPrice: importPriceNumber,
+                        retailPrice: retailPriceNumber,
+                        creationDate: date,
+                        category:categoryText,
+                        branch:branch,
+                        description: description,
+                        totalQuantity: quantity,
+                        fileName: fileName
+                    },
+                    contentType: 'application/x-www-form-urlencoded',
+                    dataType: "json",
+                    success: function (result) {
+                        isUpdate = false;
+                        itemUpdate = "";
+                        fileNameValue = "";
+                        $("#alertSuccess").html("Cập nhật sản phẩm thành công").show();
+                        $("#alertDanger").hide();
+                    },
+                    error: function (error) {
+                        //$("#alertDanger").html("Không thể thêm sản phẩm mới: "+error.responseText).show();
+                        console.log('Error message:', error.responseText);
+                    }
+                });
+            }else{
+                $.ajax({
+                    url: "/api/products",
+                    type: "POST",
+                    data: {
+                        barcode: barcode,
+                        name: productName,
+                        importPrice: importPriceNumber,
+                        retailPrice: retailPriceNumber,
+                        creationDate: date,
+                        category:categoryText,
+                        branch:branch,
+                        description: description,
+                        totalQuantity: quantity,
+                        fileName: fileName
+                    },
+                    contentType: 'application/x-www-form-urlencoded',
+                    dataType: "json",
+                    success: function (result) {
+                        $("#nameProductInput").val("");
+                        $("#barcodeInput").val("");
+                        $("#brachInput").val("");
+                        $("#retailPriceInput").val("");
+                        $("#importPrice").val("");
+                        $('#alertSuccess').show();
+                        $("#alertDanger").hide();
+                    },
+                    error: function (error) {
+                        $("#alertDanger").html("Không thể thêm sản phẩm mới: "+error.responseText).show();
+                        console.log('Error message:', error.responseText);
+                    }
+                });
+            }
+        }
+        //-----------------End send form add product ---------------------------//
+        //-----------------Send form update product ---------------------------//
+        const updateModal = $('#exampleModal');
+        if (updateModal.length) {
+            updateModal.on('show.bs.modal', function(event) {
+                const button = $(event.relatedTarget);
+                const nameProduct = button.data('bs-whatever');
+                const modalTitle = updateModal.find('.modal-header h4');
+                if(nameProduct!="add"){
+                    isUpdate = true;
+                    modalTitle.text(`Update Product ${nameProduct}`);
+                    itemUpdate = nameProduct;
+                    console.log(itemUpdate);
+                    $.ajax({
+                        url: "/api/products/"+itemUpdate,
+                        type: "GET",
+                        contentType: 'application/x-www-form-urlencoded',
+                        dataType: "json",
+                        success: function (result) {
+                            console.log(result);
+                            $('#barcodeInput').prop('disabled', true).css('background-color', '#96969645'); // Set the color you want
+                            $('#barcodeInput').val(result.product._barcode);
+                            const defaultImageUrl = "/images/productImg/"+result.product.fileName;
+                            updateImgArea(defaultImageUrl);
+
+                            $("#category").val(result.product.category);
+                            $("#nameProductInput").val(result.product.name);
+                            $("#brachInput").val(result.product.branch);
+                            const dateString = result.product.creationDate;
+                            const dateObject = new Date(dateString);
+                            const formattedDate = dateObject.toISOString().split('T')[0];
+                            $("#dateInput").val(formattedDate);
+                            $("#retailPriceInput").val(formatNumberToCurrency(result.product.retailPrice));
+                            $("#importPrice").val(formatNumberToCurrency(result.product.importPrice));
+                            $("#quantityInput").val(result.product.totalQuantity);
+                            $("#description").val(result.product.description);
+                            fileNameValue = result.product.fileName;
+
+                            if(result.product.sold) {
+                                $('#category').prop('disabled', true).css('background-color', '#96969645');
+                                $('#nameProductInput').prop('disabled', true).css('background-color', '#96969645');
+                                $('#brachInput').prop('disabled', true).css('background-color', '#96969645');
+                                $('#dateInput').prop('disabled', true).css('background-color', '#96969645');
+                                //$('#retailPriceInput').prop('disabled', true).css('background-color', '#96969645');
+                                //$('#importPrice').prop('disabled', true).css('background-color', '#96969645');
+                            }
+                        },
+                        error: function (error) {
+                            console.log('Error message:', error.responseText);
+                        }
+                    });
+                }
+            });
+        }
+
+        function updateImgArea(imageUrl) {
+            const inputFile = document.querySelector('#file');
+            const imgArea = document.querySelector('.img-area');
+            const allImg = imgArea.querySelectorAll('img');
+            allImg.forEach(item => item.remove());
+
+            const img = document.createElement('img');
+            img.src = imageUrl;
+            imgArea.appendChild(img);
+            imgArea.classList.add('active');
+        }
+
+        //-----------------End send form update product ---------------------------//
+        //-----------------Delete ---------------------------//
+        //Agree Delete Modal
+        $("#deleteSelected").click(function(e){
+            listbarcode.forEach(function(barcode) {
+                console.log("Barcode:", barcode);
+                $.ajax({
+                    url: "/api/products/"+barcode,
+                    type: "DELETE",
+                    contentType: 'application/x-www-form-urlencoded',
+                    dataType: "json",
+                    success: function (result) {
+                        console.log(result);
+                        location.reload();
+                    },
+                    error: function (error) {
+                        $("#alertGenDanger").html("Sản phẩm đã bán không thể xóa").show();
+                        console.log('Error message:', error.responseText);
+                    }
+                });
+            });
+        })
+        $("#btnDeleteModal").click(function(e){
+            e.stopPropagation();
+            e.preventDefault();
+            $.ajax({
+                url: "/api/products/"+itemDelete,
+                type: "DELETE",
+                contentType: 'application/x-www-form-urlencoded',
+                dataType: "json",
+                success: function (result) {
+                    location.reload();
+                    itemDelete = ""
+                },
+                error: function (error) {
+                    $("#alertGenDanger").html("Sản phẩm đã bán không thể xóa").show();
+                    console.log('Error message:', error.responseText);
+                    itemDelete = "";
+                    $("#deleteModal").modal('hide');
+                }
+            });
+        });
+        const exampleModal = document.getElementById('deleteModal')
+        if (exampleModal) {
+            exampleModal.addEventListener('show.bs.modal', event => {
+                const button = event.relatedTarget;
+                const nameProduct = button.getAttribute('data-bs-whatever');
+                itemDelete = button.getAttribute('data-id');
+                const modalTitle = exampleModal.querySelector('.modal-title');
+                const modalBody = exampleModal.querySelector('.modal-body');
+                modalTitle.textContent = `Delete Product ${nameProduct}`;
+                modalBody.textContent = `You want to delete ${nameProduct} and products of this category`;
+            })
+        }
+
+        //-----------------End of Delete ---------------------------//
+        //-----------------Add Category ---------------------------//
+        function addNewCategory(fileName, nameCategory){
+            $.ajax({
+                url: "/products/category",
+                type: "POST",
+                data: {
+                    nameCategory: nameCategory,
+                    fileName: fileName
+                },
+                contentType: 'application/x-www-form-urlencoded',
+                dataType: "json",
+                success: function (result) {
+                    console.log(result);
+                    location.reload();
+                    cateDelete = ""
+                    alertGenSuccess = "";
+                    $("#alertGenSuccess").html("Thêm thành công").show();
+                },
+                error: function (error) {
+                    console.log('Error message:', error.responseText);
+                    $("#alertGenDanger").html("Không thể thêm" + error.responseText).show();
+                    $("#btnCreateCate").modal('hide');
+                }
+            }); 
+        }
+    
+        
+        //-------Delete Cate---------------//
+        const cateModal = document.getElementById('deleteCateModal');
+        if (cateModal) {
+            cateModal.addEventListener('show.bs.modal', event => {
+                const button = event.relatedTarget
+                const nameCate = button.getAttribute('data-bs-whatever')
+                cateDelete = button.getAttribute('data-id')
+                const modalTitle = cateModal.querySelector('.modal-title')
+                const modalBody = cateModal.querySelector('.modal-body')
+                modalTitle.textContent = `Delete Category ${nameCate}`
+                modalBody.textContent = `You want to delete ${nameCate}`
+            })
+        }
+        $("#btnDeleteCateModal").click(function(e){
+            e.stopPropagation();
+            e.preventDefault();
+            $.ajax({
+                url: "/products/category/"+cateDelete,
+                type: "DELETE",
+                contentType: 'application/x-www-form-urlencoded',
+                dataType: "json",
+                success: function (result) {
+                    location.reload();
+                    cateDelete = "";
+                    $("#alertGenSuccess").html("Xóa thành công").show();
+                },
+                error: function (error) {
+                    $("#alertGenDanger").html("Thể loại đã bán không thể xóa").show();
+                    console.log('Error message:', error.responseText);
+                    cateDelete = "";
+                    $("#btnDeleteCateModal").modal('hide');
+                }
+            });
+        });
+
+        $("#addProductBtn2").click(function(e){
+            e.preventDefault();
+            let nameCategory = $("#categoryInput").val();
+            let fileName = $("#file2")[0].files[0];
+            if(nameCategory==""){
+                $("#cateHelper2").removeAttr("hidden");
+            }
+            if(fileName==undefined){
+                $("#fileHelper2").removeAttr("hidden");
+            }
+            else{        
+                let data = new FormData($('form#form_upload2')[0]);
+                $.ajax({
+                    url: '/products/create',
+                    contentType: false,
+                    processData: false,
+                    enctype: 'multipart/form-data',
+                    data: data,
+                    type: 'post',
+                    success: function (response) {
+                        addNewCategory(fileName.name,nameCategory);
+                    },
+                    error: function (error) {   
+                        console.log(error);
+                    }
+                });
+            }
+        });
+
+        //-----------------End of Add Category ---------------------------//
+        //------------------------Search---------------------------------//
+
+        $('#search').on('input', function () {
+            var searchValue = $(this).val().toLowerCase();
+            $('.body-table tr').hide(); // Hide all rows initially
+            var searchByName = $('.body-table tr').filter(function () {
+                var productName = $(this).find('.tm-product-name').text().toLowerCase();
+                return productName.includes(searchValue);
+            });
+            if(searchByName.length==0){
+                searchByName = $('.body-table tr[id*="' + searchValue.toLowerCase() + '"]');
+            }
+            searchByName.show();
+        });
+
+        $('#searchCate').on('input', function () {
+            var searchValue = $(this).val().toLowerCase();
+            console.log(searchValue);
+
+            $('.body-table-cate tr').hide();
+            $('.body-table-cate tr').filter(function () {
+                var categoryName = $(this).find('.tm-product-nameCate').text().toLowerCase();
+                return categoryName.includes(searchValue);
+            }).show();
+        });
+
+                
+        //-------------------End of Search----------------------------//
+    });
+
+    </script>
+  </body>
+</html>

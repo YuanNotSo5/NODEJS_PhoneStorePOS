@@ -1,0 +1,46 @@
+#payment_sidebar{
+    position: fixed;
+    height: 100%;
+    top: 0;
+    right: 0;
+    transition: 0.5s; 
+
+}
+
+#openPSidebar{
+    position: fixed;
+    right: 0px;
+    width: 50px;
+    top: 0;
+    background-color: bisque;
+    height: 100%;
+    transition: all 0.3s ease 0s;
+  }
+
+#p_sidebar{
+    background-color: bisque;
+    position: relative;
+}
+
+#p_sidebar .closebtn{
+    position: absolute;
+    top: 0;
+    left: 0;
+    font-size: 36px;
+    margin-left: 0px;
+}
+
+#p_sidebar::-webkit-scrollbar{
+    display: none;
+}
+#category_btn_navigator{
+    width: fit-content;
+    height: fit-content;
+    margin: 0 15px 0 15px;
+}
+#main {
+    transition: margin-right .5s;
+  }
+
+
+  

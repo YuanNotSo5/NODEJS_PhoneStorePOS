@@ -1,0 +1,137 @@
+* {
+    margin: 0;
+    padding: 0;
+    font-family: "Poppins", sans-serif;
+  }
+  .wrapper {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    width: 100%;
+    background: url("../images/backgroundLogin.jpg") no-repeat;
+    background-size: cover;
+    background-position: center;
+  }
+  .form__container {
+    position: relative;
+    padding: 70px 107px 70px 107px;
+    background: #5a5a5a3d;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    border-radius: 20px;
+    backdrop-filter: blur(15px);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  h2 {
+    text-shadow: 0px 0px 1px #000000;
+    font-size: 2rem;
+    color: #ffffff;
+    text-align: center;
+    margin-bottom: 45px;
+    font-weight: 600;
+  }
+  .input__box {
+    position: relative;
+    margin: 30px 0;
+    width: 310px;
+    border-bottom: 2px solid #ffffff;
+  } 
+  .input__box label {
+    position: absolute;
+    top: 50%;
+    left: 5px;
+    transform: translateY(-50%);
+    color: #ffffff;
+    font-size: 1rem;
+    pointer-events: none;
+    transition: 0.5s;
+  }
+  label {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    transition: top 0.3s ease, font-size 0.3s ease, color 0.3s ease;
+  }
+  input:focus ~ label,
+  input:valid ~ label {
+    top: -15px;
+  }
+  .input__box input {
+      width: 100%;
+      height: 50px;
+      background: transparent;
+      border: none;
+      outline: none;
+      font-size: 1rem;
+      padding: 0 35px 0 5px;
+      color: #ffffff;
+  }
+  button {
+      margin-top: 30px;
+      width: 100%;
+      height: 50px;
+      border-radius: 10px;
+      background: #ffffff;
+      border: none;
+      outline: none;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 400;
+  }
+
+  /* Toast Message */
+  .toast-container{
+    position: absolute ; 
+    z-index: 1 ; 
+    top: 10px ; 
+    width: 30% ;
+  }
+  .toast-container.show {
+    display: block !important;
+  }
+  .toast-body{
+    width: 100%;
+    height: 100%;
+    padding: 25px;
+    background-color: #ffffff;
+    border-radius: 7px;
+    display: grid;
+    grid-template-columns: 1.3fr 6fr 0.5fr;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.08);
+  }
+  .container-1 {
+    color: #ff355b;
+    font-size: 40px;
+  }
+  .error{
+    border-left: 8px solid #ff355b;
+  }
+  .container-1,.container-2{
+    align-self: center;
+  }
+  .container-2 p:first-child{
+      font-size: 16px;
+      color: #101020;
+      font-weight: 600;
+  }
+  .container-2 p:last-child{
+      font-size: 12px;
+      font-weight: 400;
+      color: #656565;
+  }
+  .toast-body button{
+      margin-top: 0px;
+      align-self: center;
+      background-color: transparent;
+      border: none;
+      font-size: 40px;
+      line-height: 0;
+      cursor: pointer;
+      color: #656565;
+  }
+

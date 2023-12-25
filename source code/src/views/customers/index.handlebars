@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!--head-->
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:400,700"/>
+
+    <link rel="stylesheet" href="/css/admin.css">
+    <link rel="stylesheet" href="/css/index.css">
+    <script src="/js/avatar.js"></script>
+    <link rel="stylesheet" href="/css/avatar.css">
+
+
+    <style>
+
+        #exampleModal .modal-body form .form-control {
+            border-radius: 6px;
+            background-color: #b6dbf6;
+            border: 1px solid #d1d1d1;
+            background-color: white;
+            color: black !important;
+        }
+        .table_container{
+            max-height: 500px;
+            margin-bottom: 15px;
+            overflow-y: scroll;
+        }
+        .tm-product-delete-icon {
+            font-size: 1.1rem;
+            color: #fff;
+        }
+        .tm-product-delete-link {
+            padding: 10px;
+            background-color: rgb(228, 46, 46);
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            text-align: center;
+        }
+        .tm-trash-icon {
+            color: #6e6c6c;
+            cursor: pointer;
+        }
+        .tm-trash-icon:hover {
+            color: #9f1321;
+        }
+        #username_row{
+            display: none;
+        }
+        #employee_header{
+            color: #9f1321;
+            margin: 30px 0 30px 0
+        }
+        .content{
+            margin-top: 20px;
+            margin-left: 20px;
+        }
+        .customer-row :hover{
+            cursor: pointer;
+        }
+
+
+    </style>
+</head>
+<!--head-->
+
+<body>
+    {{> header}}
+    {{> dashboard}}    
+    <div id="main">
+        <div class="container">
+
+            {{!-- Alert - flash message--}} 
+            {{#if deleteSuccess}}
+                <div class="alert alert-success">{{deleteSuccess}}</div>
+            {{/if}}
+            {{#if deleteFail}}
+                <div class="alert alert-danger">{{deleteFail}}</div>
+            {{/if}}
+            
+            {{!-- Alert - flash message--}} 
+
+
+            {{!-- View List Products --}}
+            <div class="row">
+            <h2 id="employee_header"><b>List Customer</b></h2>   
+                
+                <div class="col">
+                    <div class="table_container">
+                        <div class="tm-product-table-container">
+                            <table class="table table-striped table-hover border border-2 shadow rounded">
+                                <thead class="sticky-top">
+                                    <!--Các cột-->
+                                    <tr class="table-primary">
+                                        <th></th>
+                                        <th scope="col">PHONE</th>
+                                        <th scope="col">NAME</th>
+                                        <th scope="col">ADDRESS</th>
+                                        <th scope="col">Action</th> <!-- sau khi có khách hàng sẽ hiện ô -> cho phép cập nhật thông tin và xoá khách hàng -->
+                                    </tr>
+                                    <!--Các cột-->
+                                </thead>
+                                <tbody>
+                                    <!--List Customer-->
+                                    {{#each listCustomers}} <!--truyền vào list customer-->
+                                            <tr id="{{_phone}}" class="customer-row">
+                                                <td></td>
+                                                <td class="tm-product-name"><b>{{_phone}}</b></td> <!--cột số điện thoại-->
+                                                <td><b>{{name}}</b></td>      
+                                                <td><b>{{address}}</b></td>     
+                                                <td>
+                                                    <a href="#" data-bs-toggle="modal" data-bs-target="#deleteModal" class="tm-product-delete-link customer_action" data-bs-whatever="{{name}}" data-id="{{_phone}}">
+                                                        <i class="far fa-trash-alt tm-product-delete-icon"></i> 
+                                                    </a>
+                                                    {{!-- <a href="#" data-bs-toggle="modal" data-bs-target="#exampleModal" class="ms-2 tm-product-delete-link" data-bs-whatever="{{_phone}}">
+                                                        <i style="color: white;" class="fa-solid fa-pen"></i> <!--icon cập nhật thông tin-->
+                                                    </a> --}}
+                                                </td>
+                                            </tr>
+                                    {{/each}}
+                                    <!--List Customer-->
+
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+
+            <div class ="row">
+                <!--BUTTON-->
+                <div class="d-flex flex-row-reverse">
+
+                    <!--Hiện dialog cho phép thêm khách hàng-->                               
+                    <button type="button" class="btn btn-primary btn-block text-uppercase ms-3" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="add">ADD NEW CUSTOMER</button>         
+                    <!--Hiện dialog cho phép thêm khách hàng-->      
+                    
+                </div>
+                <!--BUTTON-->
+
+            </div>
+        </div>
+    </div>
+    
+    {{!-- <!--FOOTER-->
+    <footer class="tm-footer row tm-mt-small" style="position: fixed; bottom: 0px; width: 100%">
+    <div class="col-12 font-weight-light">
+        <p class="text-center text-white mb-0 px-4 small">
+        Copyright &copy; <b>2018</b> All rights reserved. 
+        </p>
+    </div>
+    </footer> 
+    <!--FOOTER--> --}}
+
+    <!--MODAL ADD DIALOG - THÊM KHÁCH HÀNG-->
+    <div class="modal fade gradient-custom-1" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen">
+
+        <!--modal content-->
+        <div class="modal-content">
+
+            <!--modal header-->
+            <div class="modal-header">
+                <h4 class="fw-bold py-3 text-title">Create New Customer</h4> <!--Tiêu đề-->
+                <button type="button" class="btn-close" data-bs-dismiss="modal" id="btnCloseModal" aria-label="Close"></button>  <!--Đóng modal-->
+            </div>
+            <!--modal header-->
+
+            <!--modal body-->
+            <div class="modal-body">
+                    <div class="container">
+
+                        <!--Alert - flash message-->
+                        <div class="alert alert-success" style="display: none;" id="alertSuccess" role="alert">
+                            Success
+                        </div>
+                        <div class="alert alert-danger" id="alertDanger" style="display: none;" role="alert"> 
+                            Unsuccess
+                        </div>
+                        <!--Alert - flash message-->
+
+
+                        <div class="content-wrapper">
+                            <div class="container-xxl flex-grow-1 container-p-y">
+                                <div class="row">
+                                            
+                                    <!--INFORMATION OF CUSTOMER-->
+                                    <div class="col-xl">
+                                        <!--form-->
+                                        <form>
+                                        
+                                            {{!-- Name --}}
+                                            <div class="row">
+                                                <div class="col-xl">
+                                                    <div class="card mb-4">
+
+                                                        <div class="card-header d-flex justify-content-between align-items-center">
+                                                            <h5 class="mb-0">Information</h5> <!--tiêu đề-->
+                                                        </div>
+
+                                                        <div class="card-body">
+                                                            
+                                                            <!--1 hàng-->
+                                                            <div class="container-1 d-flex">
+
+                                                                <!--Nhập tên-->
+                                                                <div class="mb-3 flex-fill me-2">
+                                                                    <label class="form-label" for="nameProductInput">Tên khách hàng</label>
+                                                                    <input class="form-control form-control-lg" name="product-name" type="text" placeholder="Tên khách hàng" aria-label=".form-control-lg example" id="nameProductInput">
+                                                                    <div id="nameHelper" style="color: red;" class="form-text" hidden>Vui lòng nhập đầy đủ họ tên</div>
+                                                                </div>
+                                                                <!--Nhập tên-->
+
+                                                                <!--Nhập số điện thoại-->
+                                                                <div class="mb-3">
+                                                                    <label class="form-label" for="barcodeInput">Số điện thoại</label>
+                                                                    <input name="barcode" class="form-control form-control-lg" type="text"  aria-label=".form-control-lg example"  id="barcodeInput" placeholder="Số điện thoại" aria-label="john.doe" 
+                                                                    aria-describedby="basic-default-email2"> 
+                                                                    <div id="barcodeHelper" style="color: red;" class="form-text" hidden>Vui lòng nhập số điện thoại</div>
+                                                                </div>
+                                                                <!--Nhập số điện thoại-->
+
+                                                            </div>
+                                                            <!--1 hàng-->
+
+                                                            <!--1 hàng-->
+                                                            <!--Nhập địa chỉ-->
+                                                            <div class="container-1 d-flex">
+                                                                <div class="mb-3 flex-grow-1 me-2">
+                                                                    <label class="form-label" for="brachInput">Địa chỉ</label>
+                                                                    <input name="branch" class="form-control form-control-lg" type="text" placeholder="Địa chỉ" aria-label=".form-control-lg example" id="brachInput">                                                                                 <div id="branchHelper" style="color: red;" class="form-text" hidden>Vui lòng nhập địa chỉ</div>
+                                                                </div>
+                                                            </div>
+                                                            <!--Nhập địa chỉ-->
+                                                            <!--1 hàng-->
+                                                        
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+                                        <!--form-->
+                        
+                                    </div>
+                                </div>
+                                <div class="col-xl">
+
+                                        <!--form contain image-->
+                                        <form action="/api/customer" style="height: 86%; border: 0px !important" id="form_upload" method="post" enctype="multipart/form-data">
+                                            
+                                            <button id="addProductBtn" style="width: 100%;" type="submit" class="btn btn-success px-5">Upload</button> <!--nút upload--> 
+                                        </form>
+                                        <!--form contain image-->
+                                </div>
+                            </div>
+                        <div class="content-backdrop fade"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!--modal footer-->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="cancleBtnModal" data-bs-dismiss="modal">CANCLE</button>
+            </div>
+            <!--modal footer-->
+            
+        </div>
+    </div>
+</div>
+
+    <!--MODAL DELETE DIALOG -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="btnDeleteModal">Save changes</button>
+            </div>
+            </div>
+        </div>
+    </div>
+    <!--MODAL DELETE DIALOG -->
+    <script>
+                                
+$(document).ready(function() {
+    let isUpdate = false;
+    let itemUpdate;
+    let itemDelete;
+    $('#exampleModal').on('hidden.bs.modal', function () {
+        location.reload(); // Tải lại trang
+    });
+    $("#addProductBtn").click(function (e) {
+        e.preventDefault();
+        let _phone = $("#barcodeInput").val();
+        let name = $("#nameProductInput").val();
+        let address = $("#brachInput").val();
+
+        if (checkInput(_phone, name, address)) {
+            addNewCustomer(_phone, name, address);
+        }
+    });
+
+    function checkInput(_phone, name, address) {
+    // Kiểm tra tên
+        if (name === "") {
+            $("#nameHelper").removeAttr("hidden");
+            return false;
+        }
+        if (!/^[\p{L}0-9\s]+$/u.test(name)) {
+            $("#nameHelper").text("Tên chỉ được chứa chữ và số");            
+            $("#nameHelper").removeAttr("hidden");
+            return false;
+        }
+
+        // Kiểm tra số điện thoại
+        if (_phone === "") {
+            $("#barcodeHelper").removeAttr("hidden");
+            return false;
+        }
+        if (!/^0\d{9}$/.test(_phone)) {
+            $("#barcodeHelper").text("Số điện thoại chỉ được chứa các chữ số");
+            $("#barcodeHelper").removeAttr("hidden");
+            return false;
+        }
+
+        // Kiểm tra địa chỉ
+        if (address === "") {
+            $("#branchHelper").removeAttr("hidden");
+            return false;
+        }
+
+        // Ẩn các thông báo lỗi
+        $("#nameHelper").attr("hidden", true);
+        $("#barcodeHelper").attr("hidden", true);
+        $("#branchHelper").attr("hidden", true);
+
+        return true;
+    }
+
+    function addNewCustomer(_phone, name, address) {
+        if (isUpdate) {
+            $.ajax({
+                url: "/api/customer/" + itemUpdate,
+                type: "PUT",
+                data: {
+                    name: name,
+                    address: address
+                },
+                contentType: 'application/x-www-form-urlencoded',
+                dataType: "json",
+                success: function (result) {
+                    isUpdate = false;
+                    itemUpdate = "";
+                    $("#nameProductInput").val("");
+                    $("#barcodeInput").val("");
+                    $("#brachInput").val("");
+                    $('#alertSuccess').show();
+                    $("#alertDanger").hide();
+                },
+                error: function (error) {
+                    $("#alertDanger").html("Không thể cập nhật thông tin khách hàng: " + error.responseText).show();
+                    console.log('Error message:', error.responseText);
+                }
+            });
+        } else {
+            $.ajax({
+                url: "/api/customer",
+                type: "POST",
+                data: {
+                    _phone: _phone,
+                    name: name,
+                    address: address
+                },
+                enctype: 'multipart/form-data',
+                success: function (result) {
+                    $("#nameProductInput").val("");
+                    $("#barcodeInput").val("");
+                    $("#brachInput").val("");
+                    $('#alertSuccess').show();
+                    $("#alertDanger").hide();
+                },
+                error: function (error) {
+                    $("#alertDanger").html("Không thể thêm khách hàng mới: " + error.responseText).show();
+                    console.log('Error message:', error.responseText);
+                }
+            });
+        }
+    }
+
+    //-----------------Send form update product ---------------------------//
+    const updateModal = $('#exampleModal');
+    if (updateModal.length) {
+        updateModal.on('show.bs.modal', function(event) {
+            const button = $(event.relatedTarget);
+            const nameCustomer = button.data('bs-whatever');
+
+            const modalTitle = updateModal.find('.modal-header h4');
+            if (nameCustomer != "add") {
+                isUpdate = true;
+                modalTitle.text(`Update Customer ${nameCustomer}`);
+                itemUpdate = nameCustomer;
+
+                $.ajax({
+                    url: "/api/customer/" + itemUpdate,
+                    type: "GET",
+                    contentType: 'application/x-www-form-urlencoded',
+                    dataType: "json",
+                    success: function (result) {
+                        $('#barcodeInput').prop('disabled', true).css('background-color', '#96969645'); // Set the color you want
+                        $('#barcodeInput').val(result.customer._phone);
+                        $("#nameProductInput").val(result.customer.name);
+                        $("#brachInput").val(result.customer.address);
+                    },
+                    error: function (error) {
+                        console.log('Error message:', error.responseText);
+                    }
+                });
+            }
+        });
+    }
+    //-----------------End send form update product ---------------------------//
+
+
+
+
+    //-----------------Delete ---------------------------//
+    //Agree Delete Modal
+
+
+    $("#btnDeleteModal").click(function(e){
+        e.stopPropagation(); 
+        e.preventDefault();
+        $.ajax({
+            url: "/api/customer/"+itemDelete,
+            type: "DELETE",
+            contentType: 'application/x-www-form-urlencoded',
+            dataType: "json",
+            success: function (result) {
+                location.reload();
+                itemDelete = ""
+            },
+            error: function (error) {
+                console.log('Error message:', error.responseText);
+            }
+        });
+    });  
+    const exampleModal = document.getElementById('deleteModal')
+    if (exampleModal) {
+        exampleModal.addEventListener('show.bs.modal', event => {
+
+            const button = event.relatedTarget
+            const nameCustomer = button.getAttribute('data-bs-whatever')
+            itemDelete = button.getAttribute('data-id')
+            const modalTitle = exampleModal.querySelector('.modal-title')
+            const modalBody = exampleModal.querySelector('.modal-body')
+            modalTitle.textContent = `Delete Product ${nameCustomer}`
+            modalBody.textContent = `You want to delete ${nameCustomer}`
+        })
+    }
+
+    //-----------------End of Delete ---------------------------//
+
+    var rows = document.querySelectorAll('.customer-row');
+
+    rows.forEach(function (row) {
+        row.addEventListener('click', function (e) {
+            if (e.target.classList.contains('tm-product-delete-icon')) {
+                e.preventDefault(); 
+            } else {
+                var phone = row.id;
+                if (phone) {
+                    window.location.href = '/customers/history/' + phone;
+                }
+            }
+        });
+    });
+
+
+
+});
+
+
+    </script>
+    </body>
+</html>

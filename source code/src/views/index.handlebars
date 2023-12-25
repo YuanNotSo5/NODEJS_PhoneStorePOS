@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Homepage</title>    
+    
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <script src="/js/dashboard.js"></script>
+
+    <link rel="stylesheet" href="css/category_slider.css">
+    <script src="/js/category_slider.js"></script>
+
+    <link rel="stylesheet" href="css/product_slider.css">
+    <script src="/js/product_slider.js"></script>
+
+    <link rel="stylesheet" href="/css/index.css">
+    <script src="/js/index.js"></script>
+    
+    <link rel="stylesheet" href="/css/avatar.css">
+    <script src="/js/avatar.js"></script>
+
+    <style>
+        #header nav{
+            top: 0;
+            margin-left: 50px;
+            margin-right: 50px;
+        }
+    </style>
+    
+</head>
+<body>
+    
+    {{> dashboard}}
+    {{> payment_sidebar}} 
+
+    {{> header}}
+    <div id = "main">
+
+        
+
+        <div id = "toolbar" class="row d-flex justify-content-center" style="margin-top: 20px;">
+        <div class = "col-10">
+                {{#if loginSuccess}}
+            <div class="alert alert-success">{{loginSuccess}}</div>
+            {{/if}}
+            <div class="input-group mb-3 shadow">
+
+                <input name="" id="find" type="text" class="form-control" placeholder="Search" aria-label="Recipient's username" aria-describedby="basic-addon2" onkeyup="search()">
+
+
+                <span class="input-group-text" id="basic-addon2">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </span>
+            </div>
+        </div>
+
+    </div>
+    
+    <div class="row">
+        {{> category_slider}}
+    </div>
+
+    {{#each categoriesWithProducts}}
+        <div class="product-container">
+            <div id={{_id}} class="product_label row">
+                <h3><a style="text-decoration: none; color: black; margin-left: 10px;" href="/api/products_category/{{name}}">{{name}}</a></h3>
+            </div>
+            <div class="row">
+                <div id = "product-slider" class = "d-flex align-items-center">
+                    <div id = "btn_navigator" class = "col-1">
+                        <input type ="button" class = "btn btn-light product-prev" data-id="product-list-{{name}}" value = "<"> 
+                    </div>
+                    <div id="product-list-{{name}}" class= "col-10 d-flex product-list">
+                        {{#each products}}
+                            <div class=" product-item product border border-3 rounded-3" id={{barcode}}>
+                                <div class="card-body text-center">
+                                    <div class ="product-img-container d-flex justify-content-center align-items-center">
+                                        <img src="/images/productImg/{{fileName}}" class="product-img" alt="image">
+                                    </div>      
+                                    <h5 class="card-title">{{this.name}}</h5>
+                                    <h5 class="card-text">{{formatNumberToCurrency retailPrice}}</h5>
+                                    <button class="btn btn-success">Details</button>
+                                    <button class="btn btn-danger">Add to cart</button>
+                                </div>
+                            </div>
+                        {{/each}}                    
+                    </div>
+                    <div id="btn_navigator" class = "col-1">
+                        <input type ="button" data-id="product-list-{{name}}" class="btn btn-light product-next" value = ">">
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{/each}}
+    </div>
+        
+</body>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        $('#find').on('input', function () {
+            var searchValue = $(this).val().toLowerCase();
+            $('.product-item').hide();
+            $('.product-container').hide(); 
+
+            var searchResult = $('.product-item').filter(function () {
+                var productName = $(this).find('.card-title').text().toLowerCase();
+                var productId = $(this).attr('id'); // Lấy giá trị của thuộc tính 'id'
+
+                return productName.includes(searchValue) || productId.includes(searchValue);
+            });
+            // Nếu không có kết quả với tên, thử tìm bằng id
+            if (searchResult.length === 0) {
+                searchResult = $('.product-item[id*="' + searchValue.toLowerCase() + '"]');
+            }
+            searchResult.show();
+            searchResult.each(function () {
+                var productContainer = $(this).closest('.product-container');
+                $(this).show();
+                productContainer.show();
+            });
+        });
+    });
+    
+    function formatNumberToCurrency(numberValue) {
+        // Sử dụng toLocaleString để định dạng số với dấu phẩy ngăn cách hàng nghìn
+        return numberValue.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+    }
+
+</script>
+
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" href="css/dashboard.css">
+  <script src="js/dashboard.js"></script>
+  <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900" rel="stylesheet">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+<body>
+  <a href="javascript:void(0)" id="open_dashboard" onclick="openDashboard()"></a>
+
+  <div id="dashboard" class="sidenav">
+    <a href="javascript:void(0)" class="closebtn" onclick="closeDashboard()">&times;
+
+    </a>
+    <nav id="sidebar" class="img" style="background-image: url(/images/backgroundLogin.jpg);"></nav>
+
+    <ul class="list-unstyled components mb-5">
+      <li class="active">
+        <a href="/"><span class="fa fa-home mr-3" style="margin-right: 7px"></span> Home</a>
+      </li>
+      <li>
+        <a href="/customers" id="customer_bar"><span class="fa fa-users mr-3" style="margin-right: 4px"></span> Customers</a>
+      </li>
+      <li>
+        <a href="/admin/account_employee" id="employee_bar"><span class="fa fa-user mr-3" style="margin-right: 13px"></span> Employees</a>
+      </li>
+      <li>
+        <a href="/products" id="product_bar"><span class="fa fa-cogs mr-3" style="margin-right: 5px"></span> Products</a>
+      </li>
+      <li>
+        <a href="/invoices"><span class="fa fa-file mr-3" style="margin-right: 16px"></span> Invoices</a>
+      </li>
+      <li>
+        <a href="/reports"><span class="far fa-bar-chart mr-3" style="margin-right: 10px"></span> Reports</a>
+      </li>
+      <li>
+        <a href="/logout"><span class="fas fa-sign-out mr-3" style="margin-right: 10px"></span> Logout</a>
+      </li>
+    </ul>
+  </div>
+</body>
+</html>

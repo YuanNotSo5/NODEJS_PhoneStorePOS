@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reports</title>
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <script src="/js/dashboard.js"></script>
+
+    <link rel="stylesheet" href="/css/index.css">
+
+    <link rel="stylesheet" href="/css/avatar.css">
+    <script src="/js/avatar.js"></script>
+
+    <style>
+        #employee_header{
+            color: #9f1321;
+            margin: 30px 0 30px 0
+        }
+        #dateTime{
+            height: fit-content;
+        }
+        #btnData{
+            width: 100%;
+            height: 50px;
+        }
+    </style>
+</head>
+<body>
+    {{> dashboard}}
+    {{> header}}
+
+    <div id = "main">
+        <div class="container">
+        <h2 id="employee_header" class="title">Reports And Analysis</h2>
+
+        <div class = "container border border-4 shadow">
+            <div class="row condition-container" style="padding: 20px;">
+                <div class="col">
+                    <select id="dateTime" class="form-select" aria-label=" select example" style="margin: 10px 10px 0 10px;">
+                        <option value="1">Hôm nay</option>
+                        <option value="2">Hôm qua</option>
+                        <option value="3" selected>Trong 7 ngày qua</option>
+                        <option value="4">Trong tháng này</option>
+                    </select> 
+                                                        
+                    <div class="row date-form" style="margin: 20px 0 20px 0;">
+                        <div class="col-4 mb-3 ">
+                            <label class="form-label" for="dateInputStart">From</label>
+                            <input name="date" class="form-control form-control-lg" type="date" aria-label=".form-control-lg example" id="dateInputStart">
+                            <div id="dateHelperStart" style="color: red;" class="form-text" hidden>Vui lòng chọn ngày bắt đầu</div>
+                        </div>
+                        <div class="col-4 mb-3 ">
+                            <label class="form-label" for="dateInputEnd">To</label>
+                            <input name="date" class="form-control form-control-lg" type="date" aria-label=".form-control-lg example" id="dateInputEnd">
+                            <div id="dateHelperEnd" style="color: red;" class="form-text" hidden>Vui lòng chọn ngày kết thúc</div>
+                        </div>
+
+                        <div class="col-4 mb-3 d-flex align-items-end">
+                            <button class="btn btn-primary" id="btnData">Xem báo cáo</button>
+                        </div>
+                        
+                    </div>
+                    <div class="radio-container d-flex ms-3 flex-shrink-1">
+                        <div class="form-check me-3">
+                            <input class="form-check-input" type="radio" name="flexRadioDefault" id="Revenue">
+                            <label class="form-check-label" for="Revenue">
+                                Doanh Thu
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="flexRadioDefault" id="Quantity" checked>
+                            <label class="form-check-label" for="Quantity">
+                                Số Lượng Đơn Hàng Và Sản Phẩm
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row" style="padding: 20px; overflow-y: scroll; max-height: 465px;">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">NGÀY THÁNG</th>
+                            <th scope="col">TỔNG TIỀN</th>
+                            <th scope="col">SỐ LƯỢNG ĐƠN</th>
+                            <th scope="col" class = "report_income">LỢI NHUẬN</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBodySumUp">
+                        <tr>
+                            <th scope="row"><b>{{formatDate invoiceList.[0].startDate}}</b></th>
+                            <td>
+                                <div class="tm-status-circle moving">
+                                    {{totalAmountSum}}
+                                </div>
+                            </td>
+                            <td><b>{{invoiceList.length}}</b></td>
+                            <td class = "report_income">
+                                <div class="tm-status-circle moving">
+                                    {{totalRevenue}}
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>    
+            </div>
+
+            <div class="row" style="padding: 20px;">
+                <div class="col-xxl">
+                    <div id="chartContainer1">
+                        <canvas id="myChart"></canvas>
+                    </div>
+                    <div id="chartContainer2" style="display: none;">
+                        <canvas id="myChart2"></canvas>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="row" style="padding: 20px; overflow-y: scroll; max-height: 465px;" >
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">NGÀY THÁNG</th>
+                            <th scope="col">SỐ LƯỢNG SẢN PHẨM</th>
+                            <th scope="col">DANH SÁCH HÓA ĐƠN</th>
+                            <th scope="col">DOANH THU THEO NGÀY</th>
+                            <th scope="col" class = "report_income">LỢI NHUẬN THEO NGÀY</th>
+                        </tr>
+                    </thead>
+                    <tbody id="invoiceTableBody">
+                        {{#each groupedInvoices}}
+                            <tr class={{formatDate @key}}>
+                                <td class="labels">{{formatDate @key}}</td>
+                                <td class="values" rowspan={{this.length}}>{{sumQuantities this}}</td>
+                                <td>
+                                    {{#each this}}
+                                        <div class="">
+                                            <a href="/invoices/details/{{this.invoiceId}}">{{this.invoiceId}}</a>
+                                        </div>
+                                    {{/each}}
+                                </td>
+
+                                <td class="dailyTotal">{{sumTotalAmount this}}</td>
+                                <td class="dailyRevenue report_income">{{sumRevenue this}}</td>
+                            </tr>
+                        {{/each}}
+                    </tbody>
+                </table>
+            </div>
+    </div>
+        
+    </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+
+            var labelsElements = document.querySelectorAll('.labels');
+            var labelsArray = Array.from(labelsElements);
+            var labelsValues = labelsArray.map(function(element) {
+                return element.textContent || element.innerText;
+            });
+            var valuesElements = document.querySelectorAll('.values');
+            var valuesArray = Array.from(valuesElements);
+            var values = valuesArray.map(function(element) {
+                return element.textContent || element.innerText;
+            });
+            var totalElements = document.querySelectorAll('.dailyTotal');
+            var totalArray = Array.from(totalElements);
+            var total = totalArray.map(function(element) {
+                return element.textContent || element.innerText;
+            });
+            var revenueElements = document.querySelectorAll('.dailyRevenue');
+            var revenueArray = Array.from(revenueElements);
+            var revenue = revenueArray.map(function(element) {
+                return element.textContent || element.innerText;
+            });
+            const currentDate = new Date();
+
+           $("#btnData").click((e) => {
+                var startDate = $('#dateInputStart').val();
+                var endDate = $('#dateInputEnd').val();
+
+                if (startDate == "") {
+                    $("#dateHelperStart").removeAttr("hidden");
+                    return false;
+                }
+
+                if (endDate == "") {
+                    $("#dateHelperEnd").removeAttr("hidden");
+                    return false;
+                }
+
+                const startDateObj = new Date(startDate);
+                const endDateObj = new Date(endDate);
+
+                // Kiểm tra ngày bắt đầu có nhỏ hơn ngày kết thúc
+                if (startDateObj >= endDateObj) {
+                    $("#dateHelperEnd").text("Ngày kết thúc phải lớn hơn ngày bắt đầu");
+                    $("#dateHelperEnd").removeAttr("hidden");
+                    return false;
+                }
+
+                getData(startDateObj, endDateObj);
+            });
+
+            // Thay đổi lựa chọn về ngày
+            $("#dateTime").on('change', function() {
+                let dateTime = $("#dateTime option:selected").val();
+                $('#dateInputStart').val("");
+                $('#dateInputEnd').val("");
+                var selectedValue = $(this).val();
+                const currentDate = new Date();
+
+                if (dateTime == "1") {
+
+                    currentDate.setUTCHours(0, 0, 0, 0);
+                    const tomorrow = new Date(currentDate);
+                    tomorrow.setUTCHours(0, 0, 0, 0);
+                    tomorrow.setUTCDate(currentDate.getUTCDate() + 1);
+
+                    getData(currentDate,tomorrow);
+                }
+                else if(dateTime==2){
+
+                    var yesterday = new Date(currentDate);
+                    yesterday.setUTCDate(currentDate.getUTCDate() - 1);
+                    yesterday.setUTCHours(0, 0, 0, 0);
+
+                    getData(yesterday,currentDate);
+                }
+                else if(dateTime==3){
+                    location.reload();
+                }
+                else if(dateTime==4){
+                    var firstDayOfMonth = new Date(currentDate.getUTCFullYear(), currentDate.getUTCMonth(), 1);
+                    var lastDayOfMonth = new Date(currentDate.getUTCFullYear(), currentDate.getUTCMonth() + 1, 0);
+                    getData(firstDayOfMonth,lastDayOfMonth);
+                }
+            });
+
+
+            //Hàm để tìm biểu đồ với ngày bắt đầu và kết thức tương ứng
+            function getData(startDate, endDate) {
+                $.ajax({
+                    url: "/api/invoices/data",
+                    type: "POST",
+                    data: {
+                        startDate: startDate.toISOString(),
+                        endDate: endDate.toISOString()
+                    },
+                    contentType: 'application/x-www-form-urlencoded',
+                    dataType: "json",
+                    success: function (result) {
+                        console.log(result);
+                        console.log(result.invoiceList);
+
+                        // Chi tiết hóa đơn
+                        const accumulatedData = {};
+                        Object.keys(result.groupedInvoices).forEach((date) => {
+                            const invoicesForDate = result.groupedInvoices[date];
+                            invoicesForDate.forEach((invoice) => {
+                                if (!accumulatedData[date]) {
+                                    accumulatedData[date] = {
+                                        quantity: 0,
+                                        totalAmount: 0,
+                                        revenue: 0,
+                                        invoiceIds: []  // Array to store invoice IDs
+                                    };
+                                }
+                                accumulatedData[date].quantity += invoice.quantity;
+                                accumulatedData[date].totalAmount += invoice.totalAmount;
+                                accumulatedData[date].revenue += invoice.revenue;
+                                accumulatedData[date].invoiceIds.push(invoice.invoiceId);
+                            });
+                        });
+
+
+                        const { totalAmountSum, revenueSum } = result.invoiceList.reduce((accumulator, invoice) => {
+                            accumulator.totalAmountSum += invoice.totalAmount || 0;
+                            accumulator.revenueSum += invoice.revenue || 0;
+                            return accumulator;
+                        }, { totalAmountSum: 0, revenueSum: 0 });
+
+                        updateTableAndChart(accumulatedData);
+                        updateTableAndLine(totalAmountSum,revenueSum,result.invoiceList,result.startDate, result.endDate);
+
+                    },
+                    error: function (error) {
+                        console.log('Error message:', error.responseText);
+                    }
+                });
+            }
+
+            function format (dateString) {
+                const formattedDate = moment(dateString).format('DD/MM/YYYY');
+                return formattedDate;
+            }
+
+            function updateTableAndLine(totalAmountSum,revenueSum,invoiceList, startDate, endDate){
+                const tableBody = $('#tableBodySumUp');
+                tableBody.empty();
+                const row = `<tr>
+                                <th scope="row"><b>${format(startDate)}-${format(endDate)}</b></th>
+                                <td>
+                                    <div class="tm-status-circle moving">
+                                        ${totalAmountSum}
+                                    </div>
+                                </td>                                
+                                <td><b>${invoiceList.length}</b></td>
+                                <td>
+                                    ${revenueSum}
+                                </td>
+                            </tr>`;
+                tableBody.append(row);
+                updateLine(invoiceList);
+            }
+
+            function updateTableAndChart(accumulatedData) {
+                const tableBody = $('#invoiceTableBody');
+                tableBody.empty();
+                Object.keys(accumulatedData).forEach((date) => {
+                    const dataForDate = accumulatedData[date];
+                    const invoiceLinks = dataForDate.invoiceIds.map((invoiceId) => {
+                        return `<div><a href="/invoices/details/${invoiceId}">${invoiceId}</a></div>`;
+                    });
+
+                    const invoiceLinksHtml = invoiceLinks.join('');
+                    const row = `<tr class="${format(date)}">
+                                    <td class="labels">${format(date)}</td>
+                                    <td class="values">${dataForDate.quantity}</td>
+                                    <td>
+                                        ${invoiceLinksHtml}
+                                    </td>
+                                    <td class="dailyTotal">${dataForDate.totalAmount}</td>
+                                    <td class="dailyRevenue">${dataForDate.revenue}</td>
+                                </tr>`;
+                    tableBody.append(row);
+                });
+                updateChart(accumulatedData);
+            }
+                
+            function updateLine(invoiceList){
+                // Extracting data for the chart
+                const labels = invoiceList.map(item => item.date);
+                const totalData = invoiceList.map(item => item.totalAmount);
+                const revenueData = invoiceList.map(item => item.revenue);
+
+                // Assuming you have a 'chart1' variable defined globally
+                chart1.data.labels = labels;
+                chart1.data.datasets[0].data = revenueData;
+                chart1.data.datasets[1].data = totalData;
+                chart1.update();
+            }
+
+
+            function updateChart(updatedData) {
+                // Extracting data for the chart
+                const labelsValues = Object.keys(updatedData);
+                const quantityData = labelsValues.map(date => updatedData[date].quantity);
+
+                // Assuming you have a 'chart2' variable defined globally
+                const chartData = {
+                    labels: labelsValues,
+                    datasets: [{
+                        label: 'Số lượng hóa đơn',
+                        data: quantityData,
+                        borderWidth: 1,
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(255, 159, 64, 0.2)',
+                            'rgba(255, 205, 86, 0.2)',
+                            'rgba(75, 192, 192, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(153, 102, 255, 0.2)',
+                            'rgba(201, 203, 207, 0.2)'
+                        ]
+                    }],
+                };
+
+                // Assuming you have a 'chart2' variable defined globally
+                chart2.data = chartData;
+                chart2.update();
+            }
+
+
+            //Chọn loại hiển thị
+            const revenueRadio = document.getElementById('Revenue');
+            const quantityRadio = document.getElementById('Quantity');
+            const chart1 = new Chart(document.getElementById('myChart').getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels:labelsValues,
+                    datasets: [{
+                        label: 'Lợi Nhuận',
+                        data: revenue,
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Doanh Thu',
+                        data: total,
+                        borderWidth: 1
+                    }]
+                },
+                
+            });
+            const chart2 = new Chart(document.getElementById('myChart2').getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: labelsValues,
+                    datasets: [{
+                        label: 'Số lượng hóa đơn',
+                        data: values,
+                        borderWidth: 1,
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(255, 159, 64, 0.2)',
+                            'rgba(255, 205, 86, 0.2)',
+                            'rgba(75, 192, 192, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(153, 102, 255, 0.2)',
+                            'rgba(201, 203, 207, 0.2)'
+                        ]
+                    }],
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });  
+            function toggleCharts() {
+                const isRevenueChecked = revenueRadio.checked;
+                const chartContainer1 = document.getElementById('chartContainer1');
+                const chartContainer2 = document.getElementById('chartContainer2');
+                const dateTimeSelect = document.getElementById('dateTime');
+
+                if (isRevenueChecked) {
+                    chartContainer1.style.display = 'block';
+                    chartContainer2.style.display = 'none';
+
+                    // Tự động chọn giá trị 3 khi revenue được chọn
+                    dateTimeSelect.value = '3';
+                    
+                    // Tắt giá trị 1 và 2 nếu revenue được chọn
+                    //disableOptions(dateTimeSelect, ['1', '2']);
+                } else {
+                    chartContainer1.style.display = 'none';
+                    chartContainer2.style.display = 'block';
+
+                    // Bật lại giá trị 1 và 2 nếu revenue không được chọn
+                    //enableOptions(dateTimeSelect, ['1', '2']);
+                }
+
+                chart1.update();
+                chart2.update();
+            }
+
+            /*function disableOptions(selectElement, valuesToDisable) {
+                for (let option of selectElement.options) {
+                    if (valuesToDisable.includes(option.value)) {
+                        option.disabled = true;
+                    }
+                }
+            }
+
+            function enableOptions(selectElement, valuesToEnable) {
+                for (let option of selectElement.options) {
+                    if (valuesToEnable.includes(option.value)) {
+                        option.disabled = false;
+                    }
+                }
+            }*/
+
+            toggleCharts();
+            document.querySelectorAll('input[name="flexRadioDefault"]').forEach(function(radio) {
+                radio.addEventListener('change', toggleCharts);
+            });
+        });
+    </script>
+</body>
+</html>
+
+
+
+
+

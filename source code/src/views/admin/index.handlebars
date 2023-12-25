@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Homepage</title>        
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <script src="/js/dashboard.js"></script>
+
+    <link rel="stylesheet" href="/css/index.css">
+
+    <link rel="stylesheet" href="/css/avatar.css">
+    <script src="/js/avatar.js"></script>
+    <style>
+        .invoices{
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body >
+    
+    {{> dashboard}}
+    {{> header}}
+    <div id = "main">
+        {{#if loginSuccess}}
+            <div class="alert alert-success">{{loginSuccess}}</div>
+        {{/if}}
+
+        <div class="container">
+
+        <!-- row -->
+        <div class="row tm-content-row">
+            <div class="col">
+                <h2 id = "employee_header">Invoices List</h2>
+
+                <div class="table_container" style="max-height: 465px; overflow-y: scroll;">
+                    
+                    <table class="table table-striped table-hover border border-2 shadow rounded" id="employeeTable">
+                        <thead>
+                            <tr id = "list_header">
+                                <th scope="col">ORDER NO.</th>
+                                <th scope="col">DATE</th>
+                                <th scope="col">CUSTOMER</th>
+                                <th scope="col">EMPLOYEE</th>
+                                <th scope="col">TOTAL AMOUNT</th>
+                                <th scope="col">REVENUE</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {{#each invoiceProducts}}
+                                <tr id = "{{_id}}" class = "invoices">
+                                    <th scope="row"><b>{{getIdFromListHelper @index}}</b></th>
+                                    <td><b>{{formatDate date}}</b></td>
+                                    <td>{{idCus}}</td>
+                                    <td>{{EmpName}}</td>
+                                    <td>{{totalAmount}}</td>
+                                    <td>{{revenue}}</td>
+                                    <td><a href="/invoices/details/{{_id}}" class="btn btn-primary">Details</a></td>
+                                </tr>
+                            {{/each}}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>  
+    </div>
+      
+
+</body>
+</html>

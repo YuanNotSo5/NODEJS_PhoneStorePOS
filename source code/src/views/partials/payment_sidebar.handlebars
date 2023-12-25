@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="/css/payment_sidebar.css">
+    <script src="/js/payment_sidebar.js"></script>
+</head>
+<body>
+<a href="javascript:void(0)" id = "openPSidebar" onclick="openPSidebar()"></a>
+    
+<div id="payment_sidebar">
+    <div id = "p_sidebar" class="sidenav">
+    <a href="javascript:void(0)" class="closebtn" onclick="closePSidebar()">&times;</a>
+    
+        <div class="container">
+            <div class="row w-100">
+                <div class="col-lg-12 col-md-12 col-12">
+                    <div class ="row">
+                        <h3 class="display-5 mb-2 text-center">Shopping Cart</h3>
+                    </div>
+
+                    <div class = "row">
+                        <div style="overflow-y: scroll !important; max-height: 450px !important;">
+                        <table id="shoppingCart" class="table table-condensed table-responsive">
+                        <thead>
+                            <tr>
+                              <!--  <th style="width:40%">Barcode</th>     -->                          
+                                <th style="width:40%">Product</th>
+                                <th style="width:10%">Price</th>
+                            <!--    <th style="width:10%">importPrice</th>   -->
+                                <th style="width: 10%">Quantity</th>
+                                <th style="width: 10%;">Total</th>
+                            <!--    <th style="width: 10%;">Totalimport</th>   -->
+
+                                <th style=""></th>
+                            </tr>
+                        </thead>
+                        <tbody id="shoppingCart-body">
+                        
+                        </tbody>
+                        </table>
+                        </div>
+                    </div>
+                    
+                    <div class = "row d-flex justify-content-right">
+                        <h4 style="width: fit-content;">Subtotal:</h4>
+                    </div>
+                    <div class = "row d-flex justify-content-right">
+                        <h1 style="width: fit-content;" class="price-total">0.00</h1>
+                    </div>
+                    <div class = "row d-flex justify-content-right">
+                        <h5 style="width: fit-content; display: none;" class="revenue">0.00</h5>
+                    </div>
+                    
+                </div>
+            </div>
+            <div class="row mt-4 d-flex align-items-center">
+                <div class="col-sm-6 order-md-2 text-right">
+                    <p class="btn btn-primary mb-4 btn-lg pl-5 pr-5" data-bs-toggle="modal" data-bs-target="#checkoutModal">Checkout</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!--MODAL PHONE DIALOG -->
+<div class="modal fade" id="checkoutModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel"></h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" id = "invoice_body">
+        </div>
+        <div class="modal-footer d-flex justify-content-end">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            <button type="button" class="btn btn-primary" id="btnDeleteModal">Thanh toán</button>
+        </div>
+        </div>
+    </div>
+</div>
+<!--MODAL PHONE DIALOG -->
+    <script>
+    const exampleModal = document.getElementById('checkoutModal');
+    const shoppingCart = document.getElementById('shoppingCart');
+    const priceTotal = document.querySelector('.price-total');
+
+    if (exampleModal) {
+        exampleModal.addEventListener('show.bs.modal', event => {
+            const button = event.relatedTarget;
+            const modalTitle = exampleModal.querySelector('.modal-title');
+            const modalBody = exampleModal.querySelector('.modal-body');
+            const modalFooter = exampleModal.querySelector('.modal-footer');
+
+            const totalPrice = parseFloat(priceTotal.innerText);
+            if (totalPrice !== 0) {
+                // Hiển thị dialog với ô nhập sdt
+                modalTitle.innerHTML = 'Nhập số điện thoại khách hàng';
+                modalBody.innerHTML = '<input type="text" id="phoneNumberInput" placeholder="Enter your phone number" class="form-control">';
+                modalFooter.style.display = 'block'; 
+                btnDeleteModal.textContent = 'Tìm';
+
+            } else {
+                // Hiển thị dialog k có sp
+                modalTitle.innerHTML = 'Thông báo';
+                modalBody.innerHTML = 'Bạn chưa có sản phẩm nào trong giỏ hàng để thanh toán.';
+                modalFooter.style.display = 'none'; 
+
+            }
+        });
+
+        // Kiểm tra số điện thoại 
+        const btnDeleteModal = document.getElementById('btnDeleteModal');
+        btnDeleteModal.addEventListener('click', () => {
+            const phoneNumberInput = document.getElementById('phoneNumberInput');
+            const phoneNumber = phoneNumberInput.value;
+            const phoneNumberPattern = /^0\d{9}$/;
+
+            if (!phoneNumberPattern.test(phoneNumber)) {
+                alert('Số điện thoại không hợp lệ. Vui lòng nhập lại.');
+                return;
+            }
+            btnDeleteModal.textContent = 'Xuất hoá đơn';
+            const modalTitle = exampleModal.querySelector('.modal-title');
+            modalTitle.innerHTML = 'Hoá đơn';
+
+            
+
+            // Nhập đúng -> hiện thông tin khách hàng // nhập sai -> thêm
+            fetch(`/api/customer/${phoneNumber}`)
+                .then(response => response.json())
+                .then(customer => {
+                    // nhập đúng hiện thông tin khách hàng
+                    const modalBody = exampleModal.querySelector('.modal-body');
+                    if(customer.message === 'Success') {
+                        const customerJSON = JSON.stringify(customer);
+                        modalBody.innerHTML = `<div class = "container">
+                                <h5 class="text-center" style="color: blue">Thông tin khách hàng</h5>
+                                <table class = "table">
+                                    <tr>
+                                        <td>Tên khách hàng:</td>
+                                        <td>${customer.customer.name}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Số điện thoại:</td>
+                                        <td>${customer.customer._phone}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Địa chỉ:</td> 
+                                        <td>${customer.customer.address}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        `;
+                    }
+                    else {
+                        // nhập sai hiện ô input nhập thông tin
+                        modalBody.innerHTML = 
+                        `
+                        <form action="/api/customer" id="form_upload" method="post" enctype="multipart/form-data">
+
+                        <div class="row mx-3">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="customerPhoneInput">Số điện thoại:</label>
+                                    <input type="text" id="customerPhoneInput" class="form-control" placeholder="Số điện thoại" value="${phoneNumber}">
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="customerNameInput">Tên khách hàng:</label>
+                                    <input type="text" id="customerNameInput" class="form-control" placeholder="Tên khách hàng" pattern="[a-zA-Z\s]+" required>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="customerAddressInput">Địa chỉ:</label>
+                                    <input type="text" id="customerAddressInput" class="form-control" placeholder="Địa chỉ" pattern="[a-zA-Z\s,\.]+" required>
+                                </div>
+                            </div>
+                        </div>
+                        </form>`;
+                    }
+
+                
+
+                    ////// cho hiện thêm các sản phẩm trong body
+                    modalBody.innerHTML += `<div class = "container">
+                                            <div class="row">
+                                                <div class="col">
+                                                    <h5 class="text-center" style="color: blue">Danh sách sản phẩm</h5>
+                                                </div>
+                                            <div>
+                                        </div>`;
+
+                    const tbodyRows = document.querySelectorAll('#shoppingCart-body tr');
+
+                    const productList = Array.from(tbodyRows).map(row => {
+                    const productName = row.querySelector('[data-th="Product"] h4').textContent;
+                    const productQuantity = row.querySelector('[data-th="Quantity"] input').value;
+                    const productTotal = row.querySelector('[data-th="Total"]').textContent;
+                    const barcode = row.querySelector('[data-th="Barcode"]').textContent;
+
+                        
+
+                        return { name: productName, quantity: productQuantity, total: productTotal, barcode: barcode };
+                    });
+
+                    var temp = document.createElement("div")
+                    productList.forEach(product => {
+                    temp.innerText +=`
+                                <tr>
+                                    <td style="display:none">${product.barcode}</td>
+                                    <td>${product.name}</td>
+                                    <td>${product.quantity}</td>
+                                    <td>${product.total}</td>
+                                </tr>`
+                    });
+                    console.log(temp)
+
+                    modalBody.innerHTML += `<div class="container border border-3" style="overflow-y: scroll !important; max-height: 200px !important;">
+                            <table class="table">
+                                <thead>
+                                    <th>Product</th>
+                                    <th>Quantity</th>
+                                    <th>Total</th>
+                                </thead>
+                                <div>
+                                    <tbody> 
+                                    ${temp.innerText}
+                                    </tbody>
+                                </div>
+                            </table>
+                    </div>`
+
+
+
+
+                    // Ghi giá tổng cộng bên dưới danh sách sản phẩm trong dialog
+                    modalBody.innerHTML += `<div class="container">
+                                    <div class ="row d-flex justify-content-end">
+                                        <div class = "col-2"></div>
+                                        <div class ="col-10 d-flex justify-content-end">
+                                            <h3 class="text-danger">Tổng: ${priceTotal.textContent} VND</h3>
+                                        </div>
+                                    </div>
+                                </div>`;
+
+                    // Thêm ô input Tiền nhận và Tiền thối
+                    modalBody.innerHTML += `<div class="row">
+                        <div class="col-6">
+                            <label for="receivedAmountInput">Tiền nhận:</label>
+                            <input type="text" id="receivedAmountInput" class="form-control" placeholder="Nhập tiền nhận">
+                        </div>
+                        <div class="col-6">
+                            <label for="changeAmountInput">Tiền thừa:</label>
+                            <input type="text" id="changeAmountInput" class="form-control" placeholder="Tiền thừa" readonly>
+                        </div>
+                    </div>`;
+
+
+                    // Xử lý sự kiện khi thay đổi giá trị Tiền nhận
+                    const receivedAmountInput = document.getElementById('receivedAmountInput');
+                    const changeAmountInput = document.getElementById('changeAmountInput');
+
+                    receivedAmountInput.addEventListener('input', calculateChangeAmount);
+
+                    function calculateChangeAmount() {
+                        const receivedAmount = parseFloat(receivedAmountInput.value);
+                        const totalPrice = parseFloat(priceTotal.textContent);
+
+                        const changeAmount = receivedAmount - totalPrice;
+                        changeAmountInput.value = changeAmount.toFixed(2);
+                    }
+
+
+                
+
+
+                    const productListForInvoice = Array.from(tbodyRows).map(row => {
+                    const productQuantity = parseInt(row.querySelector('[data-th="Quantity"] input').value);
+                    const productTotal = parseFloat(row.querySelector('[data-th="Total"]').textContent);
+                    const barcode = row.querySelector('[data-th="Barcode"]').textContent;
+
+                        
+
+                        return { barcode: String(barcode),quantity: productQuantity, price: productTotal};
+                    });
+                    const jsonStringList = JSON.stringify(productListForInvoice);
+
+                    
+                    const parsedList = JSON.parse(jsonStringList);
+
+                    const resultArray = [];
+
+                    parsedList.forEach(item => {
+                    const barcode = item.barcode;
+                    const quantity = item.quantity;
+                    const price = item.price;
+
+                    resultArray.push({ barcode, quantity, price });
+                    });
+
+                    /* console.log(resultArray);*/
+
+                    ///// xử lý click 
+                    const revenue = document.querySelector('.revenue');
+
+                    const btnDeleteModal = document.getElementById('btnDeleteModal');
+                    var currentDate = new Date();
+                    var dateString = currentDate.toISOString();
+                    btnDeleteModal.addEventListener('click', async () => {
+                        if (btnDeleteModal.textContent === 'Xuất hoá đơn') {
+
+                            fetch(`/api/customer/${phoneNumber}`)
+                            .then(response => response.json())
+                            .then(customer => {
+                                // nhập đúng 
+                                const modalBody = exampleModal.querySelector('.modal-body');
+                                if(customer.message === 'Success') {  // đã tồn tại // lưu hoá đơn
+                                    
+                                    
+                                    $.ajax({ // khách hàng đã có chỉ lưu database
+                                            url: '/api/invoice',
+                                            type: 'POST',
+                                            data: {
+                                                totalAmount: parseFloat(priceTotal.textContent),
+                                                products: resultArray,                                                 
+                                                receivedMoney: parseFloat(receivedAmountInput.value),
+                                                changes: parseFloat(changeAmountInput.value),
+                                                date: dateString,
+                                                idEmp: "id_emp_exp",
+                                                idCus: phoneNumber,
+                                                revenue: parseFloat(priceTotal.textContent) - parseFloat(revenue.textContent)
+                                                
+                                            },
+                                            success: function(data) {
+                                                console.log('Invoice submitted successfully', data);
+
+                                                // Lặp qua mỗi sản phẩm trong resultArray
+                                                resultArray.forEach(function(product) {
+                                                    var barcode = product.barcode;
+                                                    var quantity = product.quantity;
+
+                                                    // lưu hoá đơn thành công -> update số lượng sản phẩm trong kho
+                                                    $.ajax({
+                                                        url: '/api/products/' + barcode,
+                                                        method: 'GET',
+                                                        data: {
+                                                            _barcode: barcode,
+                                                        },
+                                                        success: function(product) {
+                                                            if(product.message === 'Success') {
+                                                                const productJSON = JSON.stringify(product);
+                                                                var totalQuantity = product.product.totalQuantity;
+                                                                var updateTotalQuantity = totalQuantity - quantity // 
+                                                                //console.log(updateTotalQuantity)
+                                                                if(product.product.sold == false){
+                                                                    console.log(product.product.sold);
+                                                                    $.ajax({
+                                                                        url: '/api/products/' + barcode, // update
+                                                                        method: 'PUT',
+                                                                        data: {
+                                                                            _barcode: barcode,
+                                                                            totalQuantity: updateTotalQuantity,
+                                                                            sold: true // update sold
+                                                                        },
+                                                                        success: function(product) {
+                                                                            console.log(product)
+                                                                        }
+                                                                    })
+                                                                }
+                                                                else{
+                                                                    $.ajax({
+                                                                        url: '/api/products/' + barcode, // update
+                                                                        method: 'PUT',
+                                                                        data: {
+                                                                            _barcode: barcode,
+                                                                            totalQuantity: updateTotalQuantity,
+                                                                        },
+                                                                        success: function(product) {
+                                                                            console.log(product)
+                                                                        }
+                                                                    })
+                                                                }
+                                                            }
+
+                                                        },
+                                                        error: function(error) {
+                                                        // Xử lý lỗi nếu cần thiết
+                                                        }
+                                                    });
+                                                });
+                                    
+                                                alert('Thành công')
+                                                $('#checkoutModal').modal('hide');
+                                            },
+                                            error: function(err) {
+                                                console.error('Error submitting invoice:', err);
+                                            }
+                                    });     
+                                                                       
+                                }
+                                else { // tạo mới khách hàng và lưu database
+                                    const name = document.getElementById("customerNameInput").value;
+                                    const address = document.getElementById("customerAddressInput").value;
+
+                                    const customerData = {
+                                        _phone: phoneNumber,
+                                        name: name ,
+                                        address: address
+                                    };
+
+                                    $.ajax({
+                                        url: "/api/customer",
+                                        type: "POST",
+                                        data: customerData,
+                                        enctype: 'multipart/form-data',
+                                        success: function (result) {
+                                            //
+                                        },
+                                        error: function (error) {
+                                            $("#alertDanger").html("Lỗi thêm khách hàng mới: " + error.responseText).show();
+                                            console.log('Error message:', error.responseText);
+                                        }
+                                    });
+
+                                    // lưu invoice
+
+                                    $.ajax({
+                                            url: '/api/invoice',
+                                            type: 'POST',
+                                            data: {
+                                                totalAmount: parseFloat(priceTotal.textContent),
+                                                products: resultArray,                                                 
+                                                receivedMoney: parseFloat(receivedAmountInput.value),
+                                                changes: parseFloat(changeAmountInput.value),
+                                                date: dateString,
+                                                idEmp: "id_emp_exp",
+                                                idCus: phoneNumber,
+                                                revenue: parseFloat(priceTotal.textContent) - parseFloat(revenue.textContent)
+                                                
+                                            },
+                                            success: function(data) {
+                                                console.log('Invoice submitted successfully', data);
+
+                                                    resultArray.forEach(function(product) {
+                                                    var barcode = product.barcode;
+                                                    var quantity = product.quantity;
+
+                                                    // lưu hoá đơn thành công -> update số lượng sản phẩm trong kho
+                                                    $.ajax({
+                                                        url: '/api/products/' + barcode,
+                                                        method: 'GET',
+                                                        data: {
+                                                            _barcode: barcode,
+                                                        },
+                                                        success: function(product) {
+                                                            if(product.message === 'Success') {
+                                                                const productJSON = JSON.stringify(product);
+                                                                var totalQuantity = product.product.totalQuantity;
+                                                                var updateTotalQuantity = totalQuantity - quantity // 
+                                                                //console.log(updateTotalQuantity)
+                                                                if(product.product.sold == false){
+                                                                    console.log(product.product.sold);
+                                                                    $.ajax({
+                                                                        url: '/api/products/' + barcode, // update
+                                                                        method: 'PUT',
+                                                                        data: {
+                                                                            _barcode: barcode,
+                                                                            totalQuantity: updateTotalQuantity,
+                                                                            sold: true
+                                                                        },
+                                                                        success: function(product) {
+                                                                            console.log(product)
+                                                                        }
+                                                                    })
+                                                                }
+                                                                else{
+                                                                    $.ajax({
+                                                                        url: '/api/products/' + barcode, // update
+                                                                        method: 'PUT',
+                                                                        data: {
+                                                                            _barcode: barcode,
+                                                                            totalQuantity: updateTotalQuantity,
+                                                                        },
+                                                                        success: function(product) {
+                                                                            console.log(product)
+                                                                        }
+                                                                    })
+                                                                }
+                                                            }
+
+                                                        },
+                                                        error: function(error) {
+                                                        // Xử lý lỗi nếu cần thiết
+                                                        }
+                                                    });
+                                                });
+                                                    
+                                                alert('Thành công')
+                                                $('#checkoutModal').modal('hide');
+
+                                            },
+                                            error: function(err) {
+                                                console.error('Error submitting invoice:', err);
+                                            }
+                                    });   
+                                }
+                            })
+                        }
+                        
+                    })
+                    
+                })        
+        });
+        if (exampleModal) {
+                exampleModal.addEventListener('hidden.bs.modal', () => {
+                location.reload(); // Tải lại trang khi dialog được đóng
+            });
+        }
+
+    }
+</script>
+
+</body>
+</html>

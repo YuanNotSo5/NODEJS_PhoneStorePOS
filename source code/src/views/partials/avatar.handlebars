@@ -1,0 +1,209 @@
+<div class="wrapper" id = "avatar">
+    <div class="content">
+        <div class="heading" id = "your_name"></div>
+        <div class="subheading" id = "your_role"></div>
+    </div>
+    <div class="content">
+        <a id = "your" href = "#" data-bs-toggle="modal" data-bs-target="#infoModal">
+            <img id = "your_img" src="/images/avatar/avatar.jpg" alt="avatar" class="avatar">
+        </a>
+        <span class="status-dot-green"></span>
+    </div>
+
+</div>
+
+<div class="modal fade " id="infoModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="alert alert-success alertSuccess" style="display: none;" role="alert">
+        Success
+    </div>
+    <div class="alert alert-danger alertDanger" style="display: none;" role="alert"> 
+        Unsuccess
+    </div>
+    <div class="modal-dialog">
+        <!--modal content-->
+        <div class="modal-content">
+            <!--modal header-->
+            <div class="modal-header">
+                <h4 class="fw-bold py-3 text-title">Infomation</h4> <!--Tiêu đề-->
+                <button type="button" class="btn-close btnCloseModal" data-bs-dismiss="modal" aria-label="Close"></button>  <!--Đóng modal-->
+            </div>
+            <!--modal header-->
+
+            <!--modal body-->
+            <div class="modal-body">
+                <div class="container">
+                    <div class="row">
+                                    
+                            <!--INFORMATION OF CUSTOMER-->
+                            <div class="col">
+                                <!--form-->
+                                <form>
+                                    <div class ="row" id = "self_username_row">
+                                        <div class ="col">
+                                            <!--Nhập tên-->
+                                            <div class="mb-3 flex-fill me-2">
+                                                <label class="form-label" for="self_usernameInput">Tên Đăng Nhập</label>
+                                                <input class="form-control form-control-lg" name="username" type="text" placeholder="username" aria-label=".form-control-lg example" id="self_usernameInput">
+                                                <div id="self_usernameHelper" style="color: red;" class="form-text" hidden>Vui lòng nhập username</div>
+                                            </div>
+                                            <!--Nhập tên-->
+                                        </div>
+                                    </div>
+
+                                    <div class ="row">
+                                        <div class ="col">
+                                            <!--Nhập tên-->
+                                            <div class="mb-3 flex-fill me-2">
+                                                <label class="form-label" for="self_nameInput">Tên nhân viên</label>
+                                                <input class="form-control form-control-lg" name="name" type="text" placeholder="Tên nhân viên" aria-label=".form-control-lg example" id="self_nameInput">
+                                                <div id="self_nameHelper" style="color: red;" class="form-text" hidden>Vui lòng nhập đầy đủ họ tên</div>
+                                            </div>
+                                            <!--Nhập tên-->
+                                        </div>
+                                    </div>
+
+                                    <div class = "row">
+                                        <div class ="col">
+                                            <!--Nhập tên-->
+                                            <div class="mb-3 flex-fill me-2">
+                                                <label class="form-label" for="self_emailInput">Email</label>
+                                                <input class="form-control form-control-lg" name="email" type="text" placeholder="email@gmail.com" aria-label=".form-control-lg example" id="self_emailInput">
+                                                <div id="self_emailHelper" style="color: red;" class="form-text" hidden>Vui lòng nhập email</div>
+                                            </div>
+                                            <!--Nhập tên-->
+                                        </div>
+                                    </div>
+
+                                    <div class = "row">
+                                        <div class ="col">
+                                                <!--Nhập số điện thoại-->
+                                            <div class="mb-3">
+                                                <label class="form-label" for="self_phoneNumberInput">Số điện thoại</label>
+                                                <input name="phoneNumber" class="form-control form-control-lg" type="text"  aria-label=".form-control-lg example"  id="self_phoneNumberInput" placeholder="Số điện thoại" aria-label="john.doe" 
+                                                aria-describedby="basic-default-email2"> 
+                                                <div id="self_barcodeHelper" style="color: red;" class="form-text" hidden>Vui lòng nhập số điện thoại</div>
+                                            </div>
+                                            <!--Nhập số điện thoại-->
+                                        </div>
+                                    </div>
+
+                                    <div class = "row">
+                                        <div class ="col">
+                                                <!--Nhập địa chỉ-->
+                                            <div class="mb-3 flex-grow-1 me-2">
+                                                <label class="form-label" for="self_addressInput">Địa chỉ</label>
+                                                <input name="address" class="form-control form-control-lg" type="text" placeholder="Địa chỉ" aria-label=".form-control-lg example" id="self_addressInput">                                               
+                                                <div id="self_branchHelper" style="color: red;" class="form-text" hidden>Vui lòng nhập địa chỉ</div>
+                                            </div>
+                                            <!--Nhập địa chỉ-->
+                                        </div>
+                                    </div>
+                                </form>
+                                <!--form-->
+                            </div>
+                            
+                    </div>
+                </div>
+            </div>
+
+            <!--modal footer-->
+            <div class="modal-footer">
+                <div class="row">
+                    <div class = "col">
+                        <a  href="/logout" type="button" class="btn btn-warning">LOGOUT</a>
+                    </div>
+                    <div class = "col">
+                        <button type="button" class="btn btn-secondary" id="self_cancelBtn" data-bs-dismiss="modal">CANCEL</button>
+                    </div>
+                    <div class = "col">
+                        <button id="self_changeEmployeeBtn" data-bs-toggle="modal" data-bs-target="#changeModal" class="btn btn-danger">PASSWORD</button> 
+                    </div>
+                    <div class = "col">
+                        <button id="self_editEmployeeBtn" class="btn btn-success">EDIT</button> 
+                    </div>
+                    <div class = "col">
+                        <button id="self_updateEmployeeBtn" style="display: none;" class="btn btn-success">UPDATE</button> 
+                    </div>
+                </div>
+            </div>
+            <!--modal footer-->
+            
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="changeModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" role="dialog" data-bs-backdrop='static'>
+    <div class="alert alert-success alertSuccess" style="display: none;" role="alert">
+        Success
+    </div>
+    <div class="alert alert-danger alertDanger" style="display: none;" role="alert"> 
+        Unsuccess
+    </div>
+
+    <div class="modal-dialog">
+        <!--modal content-->
+        <div class="modal-content">
+            <!--modal header-->
+            <div class="modal-header">
+                <h4 class="fw-bold py-3 text-title">Change Password</h4> <!--Tiêu đề-->
+                <button type="button" class="btn-close" id = "exitModalBtn" data-bs-dismiss="modal" aria-label="Close"></button>  <!--Đóng modal-->
+            </div>
+            <!--modal header-->
+
+            <!--modal body-->
+            <div class="modal-body">
+                <div class="container">
+                    <div class="row">
+                                    
+                        <!--INFORMATION OF CUSTOMER-->
+                        <div class="col">
+                            <!--form-->
+                            <form>
+                                <div class ="row">
+                                    <div class ="col">
+                                        <!--Nhập tên-->
+                                        <div class="mb-3 flex-fill me-2">
+                                            <label class="form-label" for="self_passwordInput">Mật Khẩu</label>
+                                            <input class="form-control form-control-lg" name="Password" type="text" placeholder="Mật khẩu hiện tại" aria-label=".form-control-lg example" id="self_passwordInput">
+                                            <div id="self_passwordHelper" style="color: red;" class="form-text" hidden>Vui lòng nhập mật khẩu</div>
+                                        </div>
+                                        <!--Nhập tên-->
+                                    </div>
+                                </div>
+
+                                <div class ="row">
+                                    <div class ="col">
+                                        <!--Nhập tên-->
+                                        <div class="mb-3 flex-fill me-2">
+                                            <label class="form-label" for="self_newPasswordInput">Mật Khẩu Mới</label>
+                                            <input class="form-control form-control-lg" name="newPassword" type="text" placeholder="Mật khẩu mới" aria-label=".form-control-lg example" id="self_newPasswordInput">
+                                            <div id="self_newPasswordHelper" style="color: red;" class="form-text" hidden>Vui lòng nhập mật khẩu mới</div>
+                                        </div>
+                                        <!--Nhập tên-->
+                                    </div>
+                                </div>
+                                
+                            </form>
+                            <!--form-->
+                        </div>
+                            
+                    </div>
+                </div>
+            </div>
+
+            <!--modal footer-->
+            <div class="modal-footer">
+                <div class="row">
+                    <div class = "col">
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#infoModal" class="btn btn-secondary" id = "cancelChangeBtn">CANCEL</button>
+                    </div>
+                    <div class = "col">
+                        <button id="self_changePWDEmployeeBtn" class="btn btn-success">UPDATE</button> 
+                    </div>
+                </div>
+            </div>
+            <!--modal footer-->
+            
+        </div>
+    </div>
+</div>

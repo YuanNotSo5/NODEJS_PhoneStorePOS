@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employees</title>
+
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <script src="/js/dashboard.js"></script>
+    <script src="/js/admin.js"></script>
+    <link rel="stylesheet" href="/css/admin.css">
+    <link rel="stylesheet" href="/css/index.css">
+    <link rel="stylesheet" href="/css/avatar.css">
+
+    <script src="/js/avatar.js"></script>
+    
+
+    <style>
+        .table_container{
+            max-height: 465px;
+            margin-bottom: 15px;
+            overflow-y: scroll;
+        }
+        .tm-product-delete-icon {
+            font-size: 1.1rem;
+            color: #fff;
+        }
+        .tm-product-delete-link {
+            padding: 10px;
+            border-radius: 50%;
+            background-color: #394e64;
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            text-align: center;
+        }
+        .tm-trash-icon {
+            color: #6e6c6c;
+            cursor: pointer;
+        }
+        .tm-trash-icon:hover {
+            color: #9f1321;
+        }
+        #username_row{
+            display: none;
+        }
+        #employee_header{
+            color: #9f1321;
+            margin: 30px 0 30px 0
+        }
+        .content{
+            margin-top: 20px;
+            margin-left: 20px;
+        }
+    </style>
+</head>
+    <!--List Employee-->            
+<body >
+    {{> dashboard}}
+    {{> header}}
+    
+    <div id = "main">
+<div class = "container">
+            <!--Alert - flash message-->
+            <div class="alert alert-success alertSuccess" style="display: none;" role="alert">
+                Success
+            </div>
+            <div class="alert alert-danger alertDanger" style="display: none;" role="alert"> 
+                Unsuccess
+            </div>
+            
+            <!--Alert - flash message-->
+            <div class = "row">
+                <div class= "col">
+                    <h2 id = "employee_header"><b>Employee List</b></h2>
+                    
+                    <div class = "table_container">
+
+                        <table class="table table-striped table-hover border border-2 shadow rounded" id="employeeTable">
+                        <thead>
+                            <tr id = "list_header" class="sticky-top table-primary">
+                                <th>STT</th>
+                                <th>AVATAR</th>
+                                <th>FULLNAME</th>
+                                <th>EMAIL</th>
+                                <th>STATUS</th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {{#each accounts}}
+                                <tr id ="list_content">
+                                    <td>{{getIdFromListHelper @index}}</td>
+                                    <td><img {{#with (lookup ../imgs @index)}} src="{{this}}" {{/with}} alt="avatar" class="avatar"></td>
+                                    
+                                    <td><a class = "employee_info" data-id="{{this.[0]}}" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="info" href="#"data-bs-whatever1="{{this.[1]}}"style="text-decoration: none;">{{this.[1]}}</a></td>
+
+                                    <td>{{this.[4]}}</td>
+                                    <td>
+                                        {{#if this.[3]}}
+                                            <span class="active-dot-green"></span>
+                                            Đã kích hoạt
+                                        {{else if this.[2]}}
+                                        <span class="active-dot-red"></span>
+                                            Đã khoá
+                                        {{else}}
+                                            <span class="active-dot-gray"></span>
+                                                Chưa kích hoạt
+                                        {{/if}}
+                                    </td>
+                                    <td>
+                                        {{#if this.[2]}}
+                                            <button type="button" class="btn btn-sm btn-outline-success" data-bs-toggle="modal" data-bs-target="#lockModal" data-bs-whatever="{{this.[1]}}" data-bs-whatever1="{{this.[2]}}" data-id="{{this.[0]}}">Mở khóa tài khoản</button>
+                                        {{else}}
+                                            <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#lockModal" data-bs-whatever1="{{this.[2]}}" data-bs-whatever="{{this.[1]}}" data-id="{{this.[0]}}">Khoá tài khoản</button>
+                                        {{/if}}
+
+                                        {{#if this.[3]}}
+
+                                        {{else}}
+                                            <button type="button" class="btn btn-sm btn-outline-primary activateAccount" value="{{this.[4]}}">Kích hoạt tài khoản</button>
+                                        {{/if}}
+                                    </td>
+
+                                    <td>
+                                        <div class="d-flex">
+                                        <a href="#" data-bs-toggle="modal" data-bs-target="#deleteModal" class="tm-product-delete-link  d-flex justify-content-center align-content-center" data-bs-whatever="{{this.[1]}}" data-id="{{this.[0]}}">
+                                            <i class="far fa-trash-alt tm-product-delete-icon"></i> <!--icon xoá -> nhấp vào hiện dialog-->
+                                        </a>
+                                        <a href="#" data-bs-toggle="modal" data-bs-target="#exampleModal" class="ms-2 tm-product-delete-link d-flex justify-content-center align-content-center updateAccount" data-bs-whatever1="{{this.[1]}}" data-bs-email="{{this.[4]}}" data-id="{{this.[0]}}">
+                                            <i style="color: white;" class="fa-solid fa-pen"></i> <!--icon cập nhật thông tin-->
+                                        </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                    
+                            {{/each}}
+                        </tbody>
+                    </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <!--BUTTON-->
+                <div class="d-flex flex-row-reverse">
+
+                    <!--Hiện dialog cho phép thêm khách hàng-->                               
+                    <button type="button" class="btn btn-primary btn-block text-uppercase ms-3 shadow" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="add">ADD NEW EMPLOYEE</button>         
+                    <!--Hiện dialog cho phép thêm khách hàng-->     
+                    
+                </div>
+                <!--BUTTON-->
+            </div>
+    </div>
+    </div>
+    
+       
+        
+
+        <!--MODAL ADD DIALOG - THÊM KHÁCH HÀNG-->
+        <div class="modal fade " id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <!--modal content-->
+            <div class="modal-content">
+                <!--modal header-->
+                <div class="modal-header">
+                    <h4 class="fw-bold py-3 text-title">Create New Employee</h4> <!--Tiêu đề-->
+                    <button type="button" class="btn-close btnCloseModal" data-bs-dismiss="modal" aria-label="Close"></button>  <!--Đóng modal-->
+                </div>
+                <!--modal header-->
+
+                <!--modal body-->
+                <div class="modal-body">
+                    <div class="container">
+                        
+                        <div class="container">
+                            <div class="row">
+                                <!--Alert - flash message-->
+                                <div class="alert alert-success alertSuccess" style="display: none;" role="alert">
+                                    Success
+                                </div>
+                                <div class="alert alert-danger alertDanger" style="display: none;" role="alert"> 
+                                    Unsuccess
+                                </div>
+                                <!--Alert - flash message-->
+                                        
+                                <!--INFORMATION OF CUSTOMER-->
+                                <div class="col">
+                                    <!--form-->
+                                    <form>
+                                        <div class ="row" id = "username_row">
+                                            <div class ="col">
+                                                <!--Nhập tên-->
+                                                <div class="mb-3 flex-fill me-2">
+                                                    <label class="form-label" for="usernameInput">Username</label>
+                                                    <input class="form-control form-control-lg" name="username" type="text" placeholder="username" aria-label=".form-control-lg example" id="usernameInput">
+                                                    <div id="usernameHelper" style="color: red;" class="form-text" hidden>Vui lòng nhập username</div>
+                                                </div>
+                                                <!--Nhập tên-->
+                                            </div>
+                                        </div>
+
+                                        <div class ="row">
+                                            <div class ="col">
+                                                <!--Nhập tên-->
+                                                <div class="mb-3 flex-fill me-2">
+                                                    <label class="form-label" for="nameInput">Tên nhân viên</label>
+                                                    <input class="form-control form-control-lg" name="name" type="text" placeholder="Tên nhân viên" aria-label=".form-control-lg example" id="nameInput">
+                                                    <div id="nameHelper" style="color: red;" class="form-text" hidden>Vui lòng nhập đầy đủ họ tên</div>
+                                                </div>
+                                                <!--Nhập tên-->
+                                            </div>
+                                        </div>
+
+                                        <div class = "row">
+                                            <div class ="col">
+                                                <!--Nhập tên-->
+                                                <div class="mb-3 flex-fill me-2">
+                                                    <label class="form-label" for="emailInput">Email</label>
+                                                    <input class="form-control form-control-lg" name="email" type="text" placeholder="email@gmail.com" aria-label=".form-control-lg example" id="emailInput">
+                                                    <div id="emailHelper" style="color: red;" class="form-text" hidden>Vui lòng nhập email</div>
+                                                </div>
+                                                <!--Nhập tên-->
+                                            </div>
+                                        </div>
+
+                                        <div class = "row">
+                                            <div class ="col">
+                                                    <!--Nhập số điện thoại-->
+                                                <div class="mb-3">
+                                                    <label class="form-label" for="phoneNumberInput">Số điện thoại</label>
+                                                    <input name="phoneNumber" class="form-control form-control-lg" type="text"  aria-label=".form-control-lg example"  id="phoneNumberInput" placeholder="Số điện thoại" aria-label="john.doe" 
+                                                    aria-describedby="basic-default-email2"> 
+                                                    <div id="barcodeHelper" style="color: red;" class="form-text" hidden>Vui lòng nhập số điện thoại</div>
+                                                </div>
+                                                <!--Nhập số điện thoại-->
+                                            </div>
+                                        </div>
+
+                                        <div class = "row">
+                                            <div class ="col">
+                                                    <!--Nhập địa chỉ-->
+                                                <div class="mb-3 flex-grow-1 me-2">
+                                                    <label class="form-label" for="addressInput">Địa chỉ</label>
+                                                    <input name="address" class="form-control form-control-lg" type="text" placeholder="Địa chỉ" aria-label=".form-control-lg example" id="addressInput">                                                <div id="branchHelper" style="color: red;" class="form-text" hidden>Vui lòng nhập địa chỉ</div>
+                                                </div>
+                                                <!--Nhập địa chỉ-->
+                                            </div>
+                                        </div>
+                                    </form>
+                                    <!--form-->
+                                </div>
+                                
+                            </div>
+                        
+                        </div>
+                    </div>
+                </div>
+
+                <!--modal footer-->
+                <div class="modal-footer">
+                    <div class="row">
+                        <div class = "col">
+                            <button type="button" class="btn btn-secondary" id="cancelBtnModal" data-bs-dismiss="modal">CANCEL</button>
+                        </div>
+                        <div class = "col">
+                            <button id="addEmployeeBtn" class="btn btn-success">SUBMIT</button> 
+                        </div>
+                    </div>
+                </div>
+                <!--modal footer-->
+                
+            </div>
+        </div>
+        </div>
+
+        <!--MODAL DELETE DIALOG -->
+        <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel"></h5>
+                    <button type="button" class="btn-close btnCloseModal" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="btnDeleteModal">
+                        Delete
+                    </button>
+                </div>
+                </div>
+            </div>
+        </div>
+        <!--MODAL DELETE DIALOG -->
+
+
+        <div class="modal fade" id="lockModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel"></h5>
+                    <button type="button" class="btn-close btnCloseModal" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="btnLockModal">Update</button>
+                </div>
+                </div>
+            </div>
+        </div>
+</body>
+<!---->
+</body>
+</html>
